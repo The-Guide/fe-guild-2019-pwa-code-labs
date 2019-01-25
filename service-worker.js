@@ -37,7 +37,7 @@
 /* eslint-disable indent, no-unused-vars, no-multiple-empty-lines, max-nested-callbacks, space-before-function-paren, quotes, comma-spacing */
 'use strict';
 
-var precacheConfig = [["images/favicon.ico","2ec78ad394bf7cdcfdc3109eb4933bc9"],["index.html","80385a0db3698ba25b1235287e0727fb"],["manifest.json","361f0521bb0e675704ea4c04df4bc12c"],["src/feguild2019-workshop-app.html","c612e54bb5390542a6c290cbb20fafc6"],["src/feguild2019-workshop-codelabs.html","c4a618387cb702f50619c5fcaf86e77b"],["src/feguild2019-workshop-dashboard.html","04c0033ceadf2e7356cbb3a3788154b7"],["src/labs/about/about.html","6ddffcdb609932a2803fbf4450b780e7"],["src/labs/fetch-api/fetch-api.html","99fa21676eb17396161de43b716d3539"],["src/labs/indexed-db/indexed-db.html","ce447e1f744eb4f17c630477fe134575"],["src/labs/promises/promises.html","55c512be04467f6877024717873cb9ce"]];
+var precacheConfig = [["images/favicon.ico","2ec78ad394bf7cdcfdc3109eb4933bc9"],["index.html","80385a0db3698ba25b1235287e0727fb"],["manifest.json","361f0521bb0e675704ea4c04df4bc12c"],["src/feguild2019-workshop-app.html","c612e54bb5390542a6c290cbb20fafc6"],["src/feguild2019-workshop-codelabs.html","c4a618387cb702f50619c5fcaf86e77b"],["src/feguild2019-workshop-dashboard.html","04c0033ceadf2e7356cbb3a3788154b7"],["src/labs/about/about.html","3c27740f0c09e706b93409e788a1c777"],["src/labs/fetch-api/fetch-api.html","99fa21676eb17396161de43b716d3539"],["src/labs/indexed-db/indexed-db.html","ce447e1f744eb4f17c630477fe134575"],["src/labs/promises/promises.html","55c512be04467f6877024717873cb9ce"]];
 var cacheName = 'sw-precache-v3--' + (self.registration ? self.registration.scope : '');
 
 
