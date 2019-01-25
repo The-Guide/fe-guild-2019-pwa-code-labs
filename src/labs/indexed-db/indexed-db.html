@@ -1,0 +1,649 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/codelab-components/google-codelab-elements.html">
+
+<dom-module id="codelab-indexed-db">
+    <template>
+        <google-codelab title="IndexedDB Basics" feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues" environment="web" last-updated="2019-01-25">
+            <google-codelab-step label="Introduction" duration="1">
+                <h2>What is IndexedDB?</h2>
+
+                <p>
+                    <code>IndexedDB</code> is a large-scale, <code>NoSQL</code> storage system. It lets you store just
+                    about anything in the user's browser. In addition to the usual search, get, and put actions,
+                    <code>IndexedDB</code> also supports transactions. Here is the definition of <code>IndexedDB</code>
+                    on MDN:
+                </p>
+
+                <p>
+                    "IndexedDB is a low-level API for client-side storage of significant amounts of structured data,
+                    including files/blobs. This API uses indexes to enable high performance searches of this data.
+                    While DOM Storage is useful for storing smaller amounts of data, it is less useful for storing
+                    larger amounts of structured data. IndexedDB provides a solution."
+                </p>
+
+                <p>
+                    Each IndexedDB database is unique to an origin (typically, this is the site domain or subdomain),
+                    meaning it cannot access or be accessed by any other origin. Data storage limits are usually quite
+                    large, if they exist at all, but different browsers handle limits and data eviction differently.
+                </p>
+
+                <h2>What You'll Learn</h2>
+
+                <ul class="checklist">
+                    <li>Crate an IndexedDB Database.</li>
+                    <li>Create an Object Store.</li>
+                    <li>Add an item to the database.</li>
+                    <li>Get items from the database.</li>
+                    <li>Deleting from IndexedDB.</li>
+                </ul>
+
+                <h2>What you'll need</h2>
+
+                <ul>
+                    <li>Chrome 55, Firefox 52, Edge 15, Safari 11.1, Opera 42 or above</li>
+                    <li>Your favorite text editor</li>
+                    <li>Basic knowledge of JavaScript (ES6/2015)</li>
+                    <li>Node and NPM</li>
+                </ul>
+            </google-codelab-step>
+            <google-codelab-step label="Getting set up" duration="1">
+                <h2>Project Set Up</h2>
+
+                <p>
+                    Fire up a code editor, and create an <code>index.html</code> file.
+                </p>
+
+                <h3>index.html</h3>
+
+                <pre>
+<code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;meta http-equiv="X-UA-Compatible" content="ie=edge"&gt;
+    &lt;title&gt;Promise to index my DB?&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;script&gt;
+        // IndexedDB Code will go here
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+                <h3>Optional</h3>
+
+                <p>To avoid manual refresh install <code>live-server</code></p>
+
+                <pre>
+<code>
+$ npm install -g idb
+</code></pre>
+                <p>
+                    To run it type <code>live-server</code> from the folder where you created the
+                    <code>index.html</code> file.
+                </p>
+            </google-codelab-step>
+            <google-codelab-step label="IndexedDB terms" duration="3">
+                <p>
+                    <code>IndexedDB</code> is one of the storage capabilities introduced into browsers over the years.
+                    It’s a key/value store (a noSQL database) considered to be the definitive solution for storing data
+                    in browsers.
+                </p>
+
+                <p>
+                    It’s an asynchronous API, which means that performing costly operations won’t block the UI thread
+                    providing a sloppy experience to users. It can store an indefinite amount of data, although once
+                    over a certain threshold the user is prompted to give the site higher limits.
+                </p>
+
+                <p>
+                    It's supported in all modern browsers and supports transactions, versioning and gives good
+                    performance.
+                </p>
+
+                <h2>Database</h2>
+
+                <p>
+                    This is the highest level of IndexedDB. It contains the object stores, which in turn contain the
+                    data you would like to persist. You can create multiple databases with whatever names you choose,
+                    but generally there is one database per app.
+                </p>
+
+                <p>
+                    A database is private to a domain, so any other site cannot access another website IndexedDB stores.
+                </p>
+
+                <h2>Object store</h2>
+
+                <p>
+                    An object store is an individual bucket to store data. You can think of object stores as being
+                    similar to tables in traditional relational databases. Typically, there is one object store for
+                    each 'type' (not JavaScript data type) of data you are storing. For example, given an app that
+                    persists blog posts and user profiles, you could imagine two object stores. Unlike tables in
+                    traditional databases, the actual JavaScript data types of data within the store do not need to be
+                    consistent (for example, if there are three people in the 'people' object store, their age
+                    properties could be 53, 'twenty-five', and unknown ).
+                </p>
+
+                <p>
+                    Each store usually contains a set of things, which can be
+                </p>
+
+                <ul>
+                    <li>strings</li>
+                    <li>numbers</li>
+                    <li>objects</li>
+                    <li>arrays</li>
+                    <li>dates</li>
+                </ul>
+
+                <p>
+                    A store contains a number of items which have a unique key, which represents the way by which an
+                    object can be identified.
+                </p>
+
+                <h2>Index</h2>
+
+                <p>
+                    An Index is a kind of object store for organizing data in another object store (called the reference
+                    object store) by an individual property of the data. The index is used to retrieve records in the
+                    object store by this property. For example, if you're storing people, you may want to fetch them
+                    later by their name, age, or favorite animal.
+                </p>
+
+                <h2>Transaction</h2>
+
+                <p>
+                    A transaction is wrapper around an operation, or group of operations, that ensures database
+                    integrity. If one of the actions within a transaction fail, none of them are applied and the
+                    database returns to the state it was in before the transaction began. All read or write operations
+                    in IndexedDB must be part of a transaction. This allows for atomic read-modify-write operations
+                    without worrying about other threads acting on the database at the same time.
+                </p>
+
+                <h2>Operation</h2>
+
+                <p>An interaction with the database.</p>
+
+                <p>
+                    You can alter the stores using transactions, by performing add, edit and delete operations, and
+                    iterating over the items they contain.
+                </p>
+
+                <h2>Cursor</h2>
+
+                <p>
+                    A mechanism for iterating over multiple records in database.
+                </p>
+
+                <h2>IndexedDB Promised library</h2>
+
+                <p>
+                    Since the advent of Promises in ES6, and the subsequent move of APIs to using promises, the
+                    IndexedDB API seems a bit old school.
+                </p>
+
+                <p>
+                    While there’s nothing wrong in it, in this code-lab we will use the <code>IndexedDB Promised
+                    Library</code> by Jake Archibald, which is a tiny layer on top of the IndexedDB API to make it
+                    easier to use.
+                </p>
+            </google-codelab-step>
+            <google-codelab-step label="Create an IndexedDB Database" duration="3">
+                <h3>Install the <code>idb</code> library using</h3>
+
+                <pre>
+<code>
+$ npm install --save idb
+</code></pre>
+
+                <p>
+                    And then include it in your page:
+                </p>
+
+                <pre><code>&lt;script src="./node_modules/idb/build/idb.js"&gt;&lt;/script&gt;</code></pre>
+
+                <p>
+                    Before using the IndexedDB API, we need to check for support in the browser, even though it’s widely
+                    available, you never know which browser the user is using:
+                </p>
+
+                <pre>
+<code>
+(() => {
+  'use strict';
+
+  if (!('indexedDB' in window)) {
+    console.warn('IndexedDB not supported');
+    return;
+  }
+
+  //...IndexedDB code
+})()
+</code></pre>
+
+                <h2>How to Create a Database</h2>
+
+                <p>Using <code>idb.openDb()</code> which returns a promise that resolves to a DB.</p>
+
+                <pre>
+<code>
+const name = 'fe-guild';
+const version = 1; //versions start at 1
+idb.openDb(name, version, upgradeDB => {});
+</code></pre>
+                <p>
+                    <code>name</code> and <code>version</code> behave as they do in <code>indexedDB.open</code>.
+                </p>
+
+                <p>
+                    <code>upgradeCallback</code> is called if <code>version</code> is greater than the version last
+                    opened. It's similar to IDB's <code>onupgradeneeded</code>. The callback receives an instance of
+                    <code>UpgradeDB</code>
+                </p>
+
+                <h2>Exercises</h2>
+
+                <ol>
+                    <li>Experiment with the code in this lesson</li>
+                    <li>
+                        In Chrome's Developer Tools (Application->Storage->IndexedDB) check that the database exists.
+                    </li>
+                </ol>
+
+            </google-codelab-step>
+            <google-codelab-step label="Create an Object Store" duration="4">
+                <h2>How to create an Object Store or add a new one</h2>
+
+                <p>
+                    An <code>object store</code> is created or updated the <code>upgradeDB</code> callback, using the
+                    <code>db.createObjectStore('storeName', options)</code> syntax:
+                </p>
+
+                <pre>
+<code>
+const dbPromise = idb.openDb(name, version, upgradeDB => {
+    switch (upgradeDB.oldVersion) {
+        case 0:
+        // a placeholder case so that the switch block will
+        // execute when the database is first created
+        // (oldVersion is 0)
+        case 1:
+            console.log('Creating the products object store');
+            upgradeDB.createObjectStore('phones', {keyPath: 'id'});
+    }
+});
+</code></pre>
+
+                <p>
+                    <code>createObjectStore()</code> accepts a second parameter that indicates the index key of the
+                    database. This is very useful when you store objects: <code>put()</code> calls don’t need a second
+                    parameter, but can just take the value (an object) and the key will be mapped to the object property
+                    that has that name.
+                </p>
+
+                <p>
+                    The index gives you a way to retrieve a value later by that specific key, and it must be unique
+                    (every item must have a different key)
+                </p>
+
+                <p>
+                    A key can be set to auto increment, so you don’t need to keep track of it on the client code. If you
+                    don’t specify a key, IndexedDB will create it transparently for us:
+                </p>
+
+                <pre><code>upgradeDB.createObjectStore('phones', { autoIncrement: true });</code></pre>
+
+                <p>
+                    but you can specify a specific field of object value to auto increment as well:
+                </p>
+
+                <pre>
+<code>
+upgradeDB.createObjectStore('phones', {
+  keyPath: 'id',
+  autoIncrement: true
+});
+</code></pre>
+
+                <p>
+                    As a general rule, use auto increment if your values do not contain a unique key already (for
+                    example, an email address for users).
+                </p>
+
+                <h2>Indexes</h2>
+
+                <p>
+                    An index is a way to retrieve data from the object store. It’s defined along with the database
+                    creation in the <code>idb.openDb()</code> callback in this way:
+                </p>
+
+                <pre>
+<code>
+const dbPromise = idb.openDb('dogsdb', 1, upgradeDB => {
+  const dogs = upgradeDB.createObjectStore('dogs');
+  dogs.createIndex('name', 'name', { unique: false });
+});
+</code></pre>
+                <p>
+                    The <code>unique</code> option determines if the index value should be unique, and no duplicate
+                    values are allowed to be added.
+                </p>
+
+                <p>
+                    You can access an object store already created using the
+                    <code>upgradeDB.transaction.objectStore()</code> method:
+                </p>
+
+                <pre>
+<code>
+const dbPromise = idb.openDb('dogsdb', 1, upgradeDB => {
+  const dogs = upgradeDB.transaction.objectStore('dogs');
+  dogs.createIndex('name', 'name', { unique: false });
+});
+</code></pre>
+
+                <h2>Check if a Store exists</h2>
+
+                <p>
+                    You can check if an object store already exists by calling the <code>objectStoreNames()</code>
+                    method:
+                </p>
+
+                <pre>
+<code>
+if (!upgradeDB.objectStoreNames.contains('store3')) {
+  upgradeDB.createObjectStore('store3');
+}
+</code></pre>
+
+                <h2>Exercises</h2>
+
+                <ol>
+                    <li>Experiment with the code in this lesson</li>
+                    <li>
+                        In Chrome's Developer Tools check that the stores are created (you may need to refresh).
+                    </li>
+                </ol>
+            </google-codelab-step>
+            <google-codelab-step label="Adding items to the database" duration="4">
+                <p>
+                    You can use the <code>put</code> method of the object store, but first we need a reference to it,
+                    which we can get from <code>upgradeDB.createObjectStore()</code> when we create it.
+                </p>
+
+                <p>
+                    When using <code>put</code>, the value is the first argument, the key is the second. This is because
+                    if you specify <code>keyPath</code> when creating the object store, you don’t need to enter the key
+                    name on every put() request, you can just write the value.
+                </p>
+
+                <p>
+                    This populates <code>greetings</code> store as soon as we create it:
+                </p>
+
+                <pre>
+<code>
+idb.openDb('mydb', 1, upgradeDB => {
+    const greetings = upgradeDB.createObjectStore('greetings');
+    greetings.put('Hello world!', 'Hello');
+})
+</code></pre>
+
+                <p>
+                    To add items later down the road, you need to create a <code>transaction</code>, that ensures
+                    database integrity (if an operation fails, all the operations in the transaction are rolled back
+                    and the state goes back to a known state).
+                </p>
+
+                <p>
+                    For that, use a reference to the <code>dbPromise</code> object we got when calling
+                    <code>idb.openDb()</code>, and run:
+                </p>
+
+                <pre>
+<code>
+dbPromise.then(db => {
+    const tx = db.transaction('phones', 'readwrite');
+    const store = tx.objectStore('phones');
+
+    const phones = [
+        {
+            id: 'appl-xs',
+            brand: 'Apple',
+            model: 'iPhone XS',
+            color: 'Space Gray',
+        },
+        {
+            id: 'appl-6s',
+            brand: 'Apple',
+            model: 'iPhone 6S',
+            color: 'Rose Gold',
+        },
+        {
+            id: 'galaxy-s9',
+            brand: 'Samsung',
+            model: 'Galaxy S9',
+            color: 'Black',
+        }
+    ];
+
+    return Promise.all(phones.map(phone=>{
+        console.log('Adding phone', phone);
+        return store.add(phone);
+    })).catch(error => {
+        tx.abort();
+        console.log(error);
+    }).then(() => console.log('All phones added successfully!'));
+});
+</code></pre>
+
+                <h2>Updating an item</h2>
+
+                <p>
+                    We update an item using the <code>put()</code> method:
+                </p>
+
+                <pre>
+<code>
+const tx = db.transaction('greetings', 'readwrite');
+const store = tx.objectStore('greetings');
+
+store.put('Yo!', 'Hello');
+return tx.complete;
+</code></pre>
+
+                <h2>Exercises</h2>
+
+                <ol>
+                    <li>Experiment with the code in this lesson</li>
+                    <li>
+                        In Chrome's Developer Tools check that the stores are created (you may need to refresh).
+                    </li>
+                </ol>
+            </google-codelab-step>
+            <google-codelab-step label="Get items from the database" duration="10">
+                <h2>Getting a specific item from a store using <code>get()</code></h2>
+
+                <pre>
+<code>
+dbPromise.then(db => {
+    const tx = db.transaction('phones');
+    const store = tx.objectStore('phones');
+
+    return store.get('appl-xs');
+})
+.then(phone => console.log(phone))
+.catch(error => console.log(error));
+</code></pre>
+
+                <h2>Getting all items from a store using <code>getAll()</code></h2>
+
+                <pre>
+<code>
+dbPromise.then(db => {
+    const tx = db.transaction('phones');
+    const store = tx.objectStore('phones');
+
+    return store.getAll();
+})
+.then(phones => console.log(phones))
+.catch(error => console.log(error));
+</code></pre>
+
+                <h2>Iterating on all items using a cursor via <code>openCursor()</code></h2>
+
+                <pre>
+<code>
+dbPromise.then(db => {
+    const tx = db.transaction('phones', 'readonly');
+    const store = tx.objectStore('phones');
+
+    return store.openCursor();
+})
+.then(function logItems(cursor) {
+    if (!cursor) { return; }
+
+    console.log('cursor is at:', cursor.key);
+
+    for (const field in cursor.value) {
+        console.log(cursor.value[field]);
+    }
+
+    return cursor.continue().then(logItems);
+})
+.then(()=> console.log('done!'));
+</code></pre>
+
+                <h2>Iterating on a subset of the items using bounds and cursors</h2>
+
+                <pre>
+<code>
+const searchPhoneBetweenPrices = (lower, upper) => {
+    // check if the values are not undefined, null or NaN
+
+    let range;
+    if (lower > 0 && upper > 0) {
+        range = IDBKeyRange.bound(lower, upper);
+    } else if (lower === 0) {
+        range = IDBKeyRange.upperBound(upper);
+    } else {
+        range = IDBKeyRange.lowerBound(lower);
+    }
+
+    dbPromise.then(db => {
+        const tx = db.transaction('phones', 'readonly');
+        const store = tx.objectStore('phones');
+        const index = store.index('price');
+        return index.openCursor(range);
+    })
+    .then(function showRange(cursor) {
+        if (!cursor) { return; }
+
+        console.log(`cursor is at: ${cursor.value['model']} with price ${cursor.value['price']}`);
+        return cursor.continue().then(showRange);
+    })
+    .then(() => console.log('done!'));
+};
+
+searchPhoneBetweenPrices(300, 1000);
+</code></pre>
+                <h2>Exercise</h2>
+
+                <ol>
+                    <li>Experiment with the code in this lesson</li>
+                </ol>
+            </google-codelab-step>
+            <google-codelab-step label="Deleting from IndexedDB" duration="3">
+                <p>Deleting the database, an object store and data</p>
+
+                <h2>Delete a Database</h2>
+
+                <pre><code>idb.delete('mydb').then(() => console.log('done'));</code></pre>
+
+                <h2>Delete an Object Store</h2>
+
+                <p>
+                    An object store can only be deleted in the callback when opening a db, and that callback is only
+                    called if you specify a version higher than the one currently installed:
+                </p>
+
+                <pre>
+<code>
+const dbPromise = idb.openDb('mydb', 2, (upgradeDB) => {
+    upgradeDB.deleteObjectStore('old_store');
+})
+</code></pre>
+
+                <h2>Delete data in an Object Store</h2>
+
+                <pre>
+<code>
+const key = 232;
+
+dbPromise.then((db) => {
+    const tx = db.transaction('store', 'readwrite');
+    const store = tx.objectStore('store');
+    store.delete(key);
+    return tx.complete
+})
+.then(() => console.log('Item deleted'));
+</code></pre>
+                <h2>Exercise</h2>
+
+                <ol>
+                    <li>Experiment with the code in this lesson</li>
+                </ol>
+            </google-codelab-step>
+            <google-codelab-step label="Summary" duration="1">
+                <h2>Congratulations!</h2>
+
+                <p>You have learned the basics of working with IndexedDB.</p>
+
+                <p>
+                    Here is a checklist which breaks down the things we learned in this code lab.
+                </p>
+
+                <ul class="checklist">
+                    <li>How to create, read, update and delete data in the database.</li>
+                    <li>The <code>getAll</code> method.</li>
+                    <li>How to use cursors to iterate over the data.</li>
+                </ul>
+
+                <h3>Resources</h3>
+
+                <ul>
+                    <li>
+                        <a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API">
+                            IndexedDB API <em>on MDN</em>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://developers.google.com/web/ilt/pwa/working-with-indexeddb">
+                            Working with IndexedDB <em>on Google Developers</em>
+                        </a>
+                    </li>
+                </ul>
+            </google-codelab-step>
+        </google-codelab>
+    </template>
+    <script>
+        Polymer({
+            is: 'codelab-indexed-db',
+
+            _twoWayBinding: function (value) {
+                return '{{' + value + '}}';
+            },
+
+            _oneWayBinding: function (value) {
+                return '[[' + value + ']]';
+            }
+        });
+    </script>
+</dom-module>

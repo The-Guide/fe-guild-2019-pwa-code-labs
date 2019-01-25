@@ -1,0 +1,62 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="lazy-import" href="labs/about/about.html">
+<link rel="lazy-import" href="labs/fetch-api/fetch-api.html">
+<link rel="lazy-import" href="labs/promises/promises.html">
+<link rel="lazy-import" href="labs/indexed-db/indexed-db.html">
+
+<dom-module id="feguild2019-workshop-codelabs">
+    <template>
+        <app-route
+            route="{{route}}"
+            pattern="/:codelab"
+            data="{{routeData}}">
+        </app-route>
+
+        <iron-pages selected=[[codelab]] attr-for-selected="name" fallback-selection="about">
+            <codelab-about name="about"></codelab-about>
+            <codelab-fetch-api name="fetch-api"></codelab-fetch-api>
+            <codelab-promises name="promises"></codelab-promises>
+            <codelab-indexed-db name="indexed-db"></codelab-indexed-db>
+        </iron-pages>
+    </template>
+    <script>
+        Polymer({
+            is: 'feguild2019-workshop-codelabs',
+            properties: {
+                codelab: {
+                    type: String,
+                    reflectToAttribute: true,
+                    observer: '_codelabChanged',
+                },
+                routeData: Object,
+                route: Object,
+            },
+            observers: [
+                '_routePageChanged(routeData.codelab)',
+            ],
+
+            _routePageChanged: function(codelab) {
+                // If no page was found in the route data, page will be an
+                // empty string.
+                // Default to 'dashboard' in that case.
+                this.codelab = codelab || 'about';
+            },
+
+            _codelabChanged: function(codelab) {
+                // Load page import on demand. Show 404 page if fails
+                const resolvedPageUrl =
+                    this.resolveUrl(`labs/${codelab}/${codelab}.html`);
+                this.importHref(
+                    resolvedPageUrl,
+                    null,
+                    () => this.codelab = 'about',
+                    true);
+            }
+        });
+    </script>
+</dom-module>

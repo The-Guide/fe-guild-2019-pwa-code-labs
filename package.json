@@ -1,0 +1,34 @@
+{
+    "name": "fe-guild-2019-pwa-code-labs",
+    "license": "BSD-3-Clause",
+    "version": "1.0.0",
+    "description": "Code labs for the PWA Workshop at FEGuild2019",
+    "main": "index.html",
+    "homepage": "https://github.com/The-Guide/fe-guild-2019-pwa-code-labs#readme",
+    "author": "Radu Enuca <raduenuca@gmail.com>",
+    "keywords": [
+        "polymer"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/The-Guide/fe-guild-2019-pwa-code-labs.git"
+    },
+    "bugs": {
+        "url": "https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues"
+    },
+    "scripts": {
+        "start": "polymer serve -o",
+        "build": "polymer build",
+        "deploy": "npm run build && gh-pages -d build/es5-bundled",
+        "lint": "npm run lint:javascript && polymer lint",
+        "lint:javascript": "eslint . --ext js,html --ignore-path .gitignore",
+        "test": "polymer test",
+        "test:integration": "polymer build # test that psk builds without error with the CLI"
+    },
+    "devDependencies": {
+        "eslint": "^5.2.0",
+        "eslint-config-google": "^0.11.0",
+        "eslint-plugin-html": "^4.0.5",
+        "gh-pages": "^2.0.1"
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "FrontEnd Guild Summit 2019 - Progressive Web Applications Workshop",
+    "short_name": "FEGuild2019 - PWA Workshop",
+    "description": "Code labs for the PWA Workshop at FEGuild2019",
+    "icons": [
+        {
+            "src": "images/manifest/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "images/manifest/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#fff",
+    "background_color": "#fff"
+}

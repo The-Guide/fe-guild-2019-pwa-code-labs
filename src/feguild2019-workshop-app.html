@@ -1,0 +1,85 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="lazy-import" href="feguild2019-workshop-dashboard.html">
+<link rel="lazy-import" href="feguild2019-workshop-codelabs.html">
+
+<dom-module id="feguild2019-workshop-app">
+    <template>
+        <app-location
+            route="{{route}}"
+            url-space-regex="^[[rootPath]]">
+        </app-location>
+
+        <app-route
+            route="{{route}}"
+            pattern="[[rootPath]]:page"
+            data="{{routeData}}"
+            tail="{{subroute}}">
+        </app-route>
+
+        <iron-pages
+            selected="[[page]]"
+            attr-for-selected="name"
+            fallback-selection="dashboard"
+            role="main">
+            <feguild2019-workshop-dashboard
+                name="dashboard"
+                route="{{subroute}}">
+            </feguild2019-workshop-dashboard>
+            <feguild2019-workshop-codelabs
+                name="codelabs"
+                route="{{subroute}}">
+            </feguild2019-workshop-codelabs>
+        </iron-pages>
+    </template>
+    <script>
+        Polymer({
+            is: 'feguild2019-workshop-app',
+
+            properties: {
+                page: {
+                    type: String,
+                    reflectToAttribute: true,
+                    observer: '_pageChanged'
+                },
+                routeData: Object,
+                subroute: String,
+                // This shouldn't be neccessary, but the Analyzer isn't
+                // picking up Polymer.Element#rootPath
+                rootPath: String
+            },
+
+            observers: [
+                '_routePageChanged(routeData.page)'
+            ],
+
+            created: function() {
+                this.removeAttribute('unresolved');
+            },
+
+            _routePageChanged: function(page) {
+                // If no page was found in the route data, page will be an
+                // empty string.
+                // Default to 'dashboard' in that case.
+                this.page = page || 'dashboard';
+            },
+
+            _pageChanged: function(page) {
+                // Load page import on demand. Show 404 page if fails
+                const prefix = 'feguild2019-workshop-';
+                const resolvedPageUrl = this.resolveUrl(`${prefix}${page}.html`);
+                this.importHref(
+                    resolvedPageUrl,
+                    null,
+                    () => this.page = 'dashboard',
+                    true
+                );
+            }
+        });
+    </script>
+</dom-module>

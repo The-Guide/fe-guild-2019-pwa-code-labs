@@ -1,0 +1,393 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-styles/default-theme.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-styles/shadow.html">
+
+<link rel="import" href="../bower_components/app-layout/app-layout.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="feguild2019-workshop-icons.html">
+<link rel="import" href="feguild2019-workshop-card.html">
+
+<dom-module id="feguild2019-workshop-dashboard">
+    <template>
+        <style is="custom-style">
+            :host {
+                @apply(--paper-font-subhead);
+            }
+
+            app-header-layout {
+                background-color: var(--paper-blue-grey-50);
+            }
+
+            app-header {
+                background-color: var(--paper-blue-grey-700);
+                color: rgba(255, 255, 255, var(--light-primary-opacity));
+            }
+
+            app-drawer {
+                --app-drawer-content-container: {
+                    @apply(--paper-font-subhead);
+                    background-color: var(--paper-blue-grey-50);
+                    color: rgba(0, 0, 0, var(--dark-primary-opacity));
+                }
+            }
+
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+            }
+
+            .site-width {
+                margin: 0 auto;
+                width: 90vw;
+                max-width: 1024px;
+            }
+
+            .content {
+                @apply(--layout-flex);
+                position: relative;
+            }
+
+            #mainToolbar {
+                @apply(--layout-center);
+                height: 40px;
+                padding: 10px;
+            }
+
+            #mainToolbar paper-icon-button[icon="menu"] {
+                -webkit-flex-shrink: 0;
+                -ms-flex-negative: 0;
+                flex-shrink: 0;
+            }
+
+            #mainToolbar paper-icon-button[icon="menu"] {
+                width: 40px;
+                margin-right: 8px;
+            }
+
+            #title {
+                @apply(--paper-font-title);
+            }
+
+            #title a {
+                @apply(--layout-center);
+            }
+
+            #title iron-icon {
+                height: 28px;
+                width: 28px;
+            }
+
+            #title a, #title a:focus, #title a:visited {
+                outline: 0;
+                text-decoration: none;
+                color: inherit;
+            }
+
+            header {
+                background-color: #fff;
+                color: #5c5c5c;
+                text-align: justify;
+                padding: 16px 0;
+                line-height: 16px;
+                box-shadow: 0px 3px 6px -3px #BDBDBD;
+            }
+
+            header h2 {
+                @apply(--paper-font-display2);
+                font-size: 7vw;
+                font-weight: 300;
+                margin-top: 0;
+                margin-bottom: 8px;
+            }
+
+            header p {
+                @apply(--paper-font-subhead);
+            }
+
+            footer {
+                @apply(--paper-font-menu);
+                background-color: var(--paper-blue-grey-100);
+                color: rgba(0, 0, 0, var(--dark-primary-opacity));
+                height: 30px;
+                padding: 15px 0;
+            }
+
+            .footer-wrapper {
+                @apply(--layout-horizontal);
+            }
+
+            #card-filter {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                @apply(--layout-justified);
+            }
+
+            #sortby {
+                padding: 24px 0;
+                @apply(--layout-center-justified);
+            }
+
+            #sortby paper-tabs {
+                --paper-tabs-selection-bar-color: #000;
+                color: var(--google-grey-700);
+                text-transform: uppercase;
+            }
+
+            #sortby paper-tab:hover {
+                background-color: var(--paper-blue-grey-100);
+                opacity: 1;
+            }
+
+            #categoryfilter {
+                background-color: #fff;
+                width: 200px;
+
+                --paper-dropdown-menu-input: {
+                    border-bottom: none;
+                };
+
+                --paper-input-container-underline: {
+                    display: none;
+                };
+
+                --paper-input-container-underline-focus: {
+                    display: none;
+                };
+
+                --paper-input-container: {
+                    padding: 8px;
+                }
+            }
+
+            #categoryfilter paper-listbox {
+                width: 200px;
+            }
+
+            paper-listbox {
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            paper-item {
+                position: relative;
+                cursor: pointer;
+                font-weight: 300;
+            }
+
+            paper-item.iron-selected {
+                background-color: #ECEFF1;
+                color: #455a64;
+                font-weight: bold;
+            }
+
+            #cards {
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+            }
+
+            #cards feguild2019-workshop-card:nth-of-type(3n) {
+                margin-right: 0;
+            }
+
+            /* Extra small devices (phones, less than 768px) */
+            /* No media query since this is the default */
+            /*@media (max-width: 768px) {*/
+
+            /*}*/
+
+            /* Small devices (tablets, 768px and up) */
+            @media (min-width: 768px) {
+                #title {
+                    @apply(--layout-horizontal);
+                    @apply(--layout-center-justified);
+                    @apply(--paper-font-display1);
+                }
+
+                #title iron-icon {
+                    height: 40px;
+                    width: 40px;
+                }
+
+                #mainToolbar {
+                    height: 50px;
+                }
+
+                #mainToolbar [icon=menu] {
+                    display: none;
+                }
+
+                header {
+                    padding: 30px 0;
+                }
+
+                header h2 {
+                    @apply(--paper-font-display2);
+                    margin-bottom: 16px;
+                }
+
+                header p {
+                    line-height: 32px;
+                }
+
+                #cards {
+                    @apply(--layout-horizontal);
+                    @apply(--layout-wrap);
+                    @apply(--layout-start);
+                }
+            }
+
+            /* Medium devices (desktops, 992px and up) */
+            /*@media (min-width: 992px) {*/
+            /*}*/
+
+            /* Large devices (large desktops, 1200px and up) */
+            /*@media (min-width: 1200px) {*/
+            /*}*/
+        </style>
+
+        <iron-ajax auto url="[[rootPath]]data/codelabs.json" last-response="{{_codeLabs}}"></iron-ajax>
+
+        <app-drawer-layout fullbleed force-narrow>
+            <!--<app-drawer swipe-open>-->
+            <!--drawer-content-->
+            <!--</app-drawer>-->
+            <app-header-layout fullbleed has-scrolling-region>
+                <app-header fixed>
+                    <app-toolbar id="mainToolbar">
+                        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                        <div id="title" class="site-width" main-title="">
+                            <a href="/">
+                                <iron-icon icon="dev:source-code"></iron-icon>
+                                <span>FEGuild2019 PWA Workshop</span>
+                            </a>
+                        </div>
+                    </app-toolbar>
+                </app-header>
+
+                <header>
+                    <div class="site-width" bottom-item>
+                        <h2>Welcome to Codelabs!</h2>
+                        <p>
+                            FEGuild2019 PWA Workshop code labs provide a guided, tutorial, hands-on coding experience.
+                            Most code labs will step you through the process of learning specific parts of Progressive
+                            Web Applications or provide a refresher on some tools used in the code labs.
+                        </p>
+                    </div>
+                </header>
+
+                <div class="site-width content">
+                    <div id="card-filter" class="site-width">
+                        <div id="sortby">
+                            <paper-tabs selected="{{_sortOrder}}"
+                                        noink
+                                        tabindex="0"
+                                        attr-for-selected="sort-order"
+                                        fallback-selection="alphabetical">
+                                <paper-tab noink tabindex="0" sort-order="alphabetical">A-Z</paper-tab>
+                                <paper-tab noink tabindex="-1" sort-order="recent">Recent</paper-tab>
+                                <paper-tab noink tabindex="-1" sort-order="duration">Duration</paper-tab>
+                            </paper-tabs>
+                        </div>
+                        <!--<paper-dropdown-menu id="categoryfilter" label="Category" no-label-float>-->
+                            <!--<paper-listbox class="dropdown-content" selected="{{_currentCategory}}"-->
+                                           <!--attr-for-selected="category">-->
+                                <!--<paper-item category="html">HTML</paper-item>-->
+                                <!--<paper-item category="css">CSS</paper-item>-->
+                                <!--<paper-item category="javascript">JavaScript</paper-item>-->
+                                <!--<paper-item category="angularjs">AngularJs</paper-item>-->
+                                <!--<paper-item category="polymer">Polymer</paper-item>-->
+                                <!--<paper-item category="web-components">Web Components</paper-item>-->
+                            <!--</paper-listbox>-->
+                        <!--</paper-dropdown-menu>-->
+                    </div>
+                    <div id="cards" class="site-width">
+                        <template is="dom-repeat"
+                                  items="[[_codeLabs]]" as="codeLab"
+                                  sort="[[_sort(_sortOrder)]]"
+                                  filter="[[_filter(_currentCategory)]]">
+                            <feguild2019-workshop-card
+                                url="[[rootPath]]codelabs/[[codeLab.slug]]"
+                                category="[[codeLab.category]]"
+                                title="[[codeLab.title]]"
+                                updated="[[codeLab.updated]]"
+                                author="[[codeLab.author]]"
+                                tags="[[codeLab.tags]]"
+                                duration="[[codeLab.duration]]">
+                            </feguild2019-workshop-card>
+                        </template>
+                    </div>
+                </div>
+
+                <footer>
+                    <div class="site-width footer-wrapper">
+                        &copy; Radu Enuca 2019
+                    </div>
+                </footer>
+            </app-header-layout>
+        </app-drawer-layout>
+    </template>
+    <script>
+        Polymer({
+            is: 'feguild2019-workshop-dashboard',
+
+            _filter: function (category) {
+                return function (codeLab) {
+                    if (!category) {
+                        return true;
+                    }
+
+                    if (!codeLab) {
+                        return false;
+                    }
+
+                    return codeLab.category.toLowerCase() === category;
+                };
+            },
+
+            _sort: function (sortOrder) {
+                // TODO: Improve this
+                const sortFunctions = {
+                    alphabetical: (a, b) => {
+                        if (a.title === b.title) {
+                            return 0;
+                        }
+
+                        return a.title < b.title ? -1 : 1;
+                    },
+                    recent: (a, b) => {
+                        const aDate = +new Date(a.updated);
+                        const bDate = +new Date(b.updated);
+
+                        if (aDate === bDate) {
+                            return 0;
+                        }
+
+                        return aDate > bDate ? -1 : 1;
+                    },
+                    duration: (a, b) => {
+                        if (a.duration === b.duration) {
+                            return 0;
+                        }
+                        return a.duration < b.duration ? -1 : 1;
+                    },
+                };
+
+                return sortFunctions[sortOrder];
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,31 @@
+{
+    "entrypoint": "index.html",
+    "shell": "src/feguild2019-workshop-app.html",
+    "fragments": [
+        "src/feguild2019-workshop-dashboard.html",
+        "src/feguild2019-workshop-codelabs.html",
+        "src/labs/about/about.html",
+        "src/labs/fetch-api/fetch-api.html",
+        "src/labs/indexed-db/indexed-db.html",
+        "src/labs/promises/promises.html"
+    ],
+    "sources": [
+        "src/**/*",
+        "data/**/*",
+        "images/**/*"
+    ],
+    "extraDependencies": [
+        "manifest.json",
+        "bower_components/webcomponentsjs/*.js"
+    ],
+    "lint": {
+        "rules": ["polymer-1"]
+    },
+    "builds": [
+        {
+            "preset": "es5-bundled",
+            "basePath": "/fe-guild-2019-pwa-code-labs/",
+            "addServiceWorker": true
+        }
+    ]
+}
