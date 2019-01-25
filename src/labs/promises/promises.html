@@ -1,0 +1,142 @@
+<html><head></head><body><dom-module id="codelab-promises"><template><google-codelab title="Promise API Basics" feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues" environment="web" last-updated="2019-01-24"><google-codelab-step label="Introduction" duration="1"><h2>What is a Promise?</h2><p>A promise is an object that may produce a single value sometime in the future: either a resolved value or a reason that it’s not resolved (e.g., a network error occurred).</p><p>A <code>Promise</code> is in one of these states:</p><ul><li><em>pending:</em> initial state, neither fulfilled nor rejected.</li><li><em>fulfilled:</em> meaning that the operation completed successfully.</li><li><em>rejected:</em> meaning that the operation failed.</li></ul><p>Promise users can attach callbacks to handle the fulfilled value or the reason for rejection.</p><h2>What You'll Learn</h2><ul class="checklist"><li>How to create and consume Promises.</li><li>How to chain Promises.</li><li>How to simplify Promises with <em>async/await</em>.</li></ul><h2>What you'll need</h2><ul><li>Chrome 55, Firefox 52, Edge 15, Safari 11.1, Opera 42 or above</li><li>Your favorite text editor</li><li>Basic knowledge of JavaScript (ES6/2015)</li><li><strong><em>(Optional)</em></strong> Node and NPM</li></ul></google-codelab-step><google-codelab-step label="Getting set up" duration="1"><h2>Project Set Up</h2><p>Fire up a code editor, and create an <code>index.html</code> file</p><h3>index.html</h3><pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;meta http-equiv="X-UA-Compatible" content="ie=edge"&gt;
+    &lt;title&gt;Promises, promises&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;script&gt;
+        // Promises code will go here
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><h3>Optional</h3><p>To avoid manual refresh install <code>live-server</code></p><pre><code>
+$ npm install -g live-server
+</code></pre><p>To run it type <code>live-server</code> from the folder where you created the <code>index.html</code> file.</p></google-codelab-step><google-codelab-step label="Promises Basics" duration="23"><h2>Understanding Promises</h2><p>A real-life Promise in short:</p><p>"Imagine you are a <strong>kid</strong>. Your parents <strong>promise</strong> you that they'll get you a <strong>new phone</strong> next week."</p><p>You <em>don't know</em> if you will get the phone until next week. Your parents can either <em>really buy</em> you a brand new phone, or <em>stand you up</em> and withhold the phone if they are not happy :(, this is a <strong>promise</strong>.</p><p>As stated in the introduction a promise has 3 states. They are:</p><ul><li><strong>Pending</strong>: You <em>don't know</em> if you will get that phone</li><li><strong>Fulfilled</strong>: Parents are happy, they buy you a brand new phone</li><li><strong>Rejected</strong>: Your parents are unhappy, they withhold the phone</li></ul><h2>Creating a Promise</h2><h3>Syntax</h3><pre><code>
+new Promise( /* executor */ function(resolve, reject) { ... } );
+</code></pre><p><strong>executor:</strong> a function that is passed with the arguments <code>resolve</code> and <code>reject</code>. The <code>executor</code> function is executed immediately by the Promise implementation before the <code>Promise</code> constructor even returns the created object. The <code>resolve</code> and <code>reject</code> are functions, that when called, resolve or reject the promise, respectively. The executor usually initiates some asynchronous work, and then, once that completes, either calls the <code>resolve</code> function passing the result or else calls <code>reject</code> if an error occurred.</p><h3>Implementation</h3><p>Let's convert the phone buying promise to JavaScript</p><pre><code>
+const areParentsHappy = false;
+
+// Promise
+const willGetNewPhone = new Promise((resolve, reject) =&gt; {
+    if (areParentsHappy) {
+        const phone = {
+            brand: 'Apple',
+            model: 'iPhone Xs',
+            color: 'Space Gray'
+        };
+
+        resolve(phone); // fulfilled
+    } else {
+        const reason = new Error('parents are not happy');
+
+        reject(reason); // reject
+    }
+});
+</code></pre><h2>Consuming Promises</h2><h3>Syntax</h3><p>A Promise object serves as a link between the executor (the "producing code") and the consuming functions, which receives the result or error. Consuming functions can be registered (subscribed) using the methods <code>.then</code> and <code>.catch</code>.</p><ul><li><pre><code>Promise.prototype.catch(onRejected)</code></pre><p>Appends a rejection handler callback to the promise, and returns a new promise resolving to the return value of the callback if it is called, or to its original fulfillment value if the promise is instead fulfilled.</p></li><li><pre><code>Promise.prototype.then(onFulfilled, onRejected)</code></pre><p>Appends fulfillment and rejection handlers to the promise, and returns a new promise resolving to the return value of the called handler, or to its original settled value if the promise was not handled (i.e., if the relevant handler onFulfilled or onRejected is not a function).</p></li><li><pre><code>Promise.prototype.finally(onFinally)</code></pre><p>Appends a handler to the promise, and returns a new promise which is resolved when the original promise is resolved. The handler is called when the promise is settled, whether fulfilled or rejected.</p></li></ul><h3>Implementation</h3><pre><code>
+const askParents = () =&gt; {
+    willGetNewPhone
+        .then(fulfilled =&gt; {
+            // yay, you got a new phone
+            console.log(fulfilled);
+            // output: { brand: 'Apple', model: 'iPhone Xs', color: 'Space Gray' }
+        })
+        .catch(error =&gt; {
+            // oops, parents didn't buy it
+            console.log(error.message);
+            // output: parents are not happy
+        });
+};
+
+askParents();
+</code></pre><h2>Chaining Promises</h2><p>Promises are chainable.</p><p>Let's say, you, the kid, <strong>promise</strong> your friend that you will <strong>show him</strong> the new phone when your parents buy you one.</p><p>That's another promise. Let's write it!</p><pre><code>
+const showOff = (phone) =&gt; Promise.resolve(`Hey bro, I have a new ${phone.color} ${phone.brand} ${phone.model} phone`);
+</code></pre><p>Let's chain the promises. You, the kid can only start to <code>showOff</code> after you <code>willIGetNewPhone</code>. Adapt the <code>askParents</code> function.</p><pre><code>
+const askParents = () =&gt; {
+    willGetNewPhone
+        .then(showOff) // chain it here
+        .then(fulfilled =&gt; {
+            console.log(fulfilled);
+            // output: 'Hey bro, I have a new Space Gray Apple iPhone Xs phone'
+        })
+        .catch(error =&gt; {
+            // oops, parents didn't buy it
+            console.log(error.message);
+            // output: parents are not happy
+        });
+};
+</code></pre><p>That's how easy to chain the promise.</p><h2>Promises are Asynchronous</h2><p>Promises are asynchronous. Let's log a message before and after we call the promise.</p><pre><code>
+const askParents = () =&gt; {
+    console.log('Before asking parents'); //log before
+    willGetNewPhone
+        .then(showOff)
+        .then(fulfilled =&gt; {
+            console.log(fulfilled);
+        })
+        .catch(error =&gt; {
+            console.log(error.message);
+        });
+    console.log('After asking parents'); //log after
+};
+</code></pre><p>What is the sequence of expected output? Probably you expect:</p><ol><li>Before asking parents</li><li>Hey bro, I have a new Space Gray Apple iPhone Xs phone</li><li>After asking parents</li></ol><p>However, the actual output sequence is:</p><ol><li>Before asking parents</li><li>After asking parents</li><li>Hey bro, I have a new Space Gray Apple iPhone Xs phone</li></ol><h3>Why? Because life (or JavaScript) waits for no man.</h3><p>You, the kid, wouldn't stop playing while waiting for your parents' promise (the new phone). Don't you? That's something we call <strong>asynchronous</strong>, and the code will run without blocking or waiting for the result. Anything that needs to wait for the promise to proceed, you put that in <code>.then</code>.</p><h2>Other Promise methods</h2><p>Promise has 2 more useful methods</p><h3>Promise.all()</h3><p>As per MDN documentation</p><p>The <code>Promise.all(iterable)</code> method returns a single <code>Promise</code> that resolves when all of the promises in the iterable argument have resolved or when the iterable argument contains no promises. It rejects with the reason of the first promise that rejects.</p><pre><code>
+Promise.all([promise1, promise2]).then(results =&gt; {
+    // Both promises resolved
+})
+.catch(error =&gt; {
+    // One or more promises was rejected
+});
+</code></pre><h3>Promise.race()</h3><p><code>Promise.race</code> is an interesting function -- instead of waiting for all promises to be resolved or rejected, <code>Promise.race</code> triggers as soon as any promise in the array is resolved or rejected.</p><pre><code>
+Promise.race([promise1, promise2]).then(result =&gt; {
+    // promise1 or promise2 resolved
+})
+.catch(error =&gt; {
+    // promise1 or promise2 rejected
+});
+</code></pre><h2>Exercises</h2><ol><li>Run the code in this code lab</li><li>Create a small sample for <code>Promise.all</code></li><li>Create a small sample for <code>Promise.race</code></li></ol></google-codelab-step><google-codelab-step label="async/await" duration="4"><h2>Async/Await?</h2><p>Async/Await allows us to write asynchronous JavaScript that looks synchronous. Async/Await it is built on top of Promises (non-blocking, etc.), yet allows for code to be readable and reads as if it were synchronous.</p><p>The <code>async</code> and <code>await</code> syntax where introduced in ECMAScript 2016 (ES7). As stated above it make the asynchronous syntax look prettier and easier to understand, without the <code>.then</code> and <code>.catch</code></p><p>Let's rewrite our example with <code>async/await</code> syntax:</p><pre><code>
+const areParentsHappy = false;
+
+// Promise
+const willGetNewPhone = new Promise((resolve, reject) =&gt; {
+    if (areParentsHappy) {
+        const phone = {
+            brand: 'Apple',
+            model: 'iPhone Xs',
+            color: 'Space Gray'
+        };
+
+        resolve(phone); // fulfilled
+    } else {
+        const reason = new Error('parents are not happy');
+
+        reject(reason); // reject
+    }
+});
+
+// Friend promise
+const showOff = async phone =&gt; Promise.resolve(`Hey bro, I have a new ${phone.color} ${phone.brand} ${phone.model} phone`);
+
+// Call our promise
+const askParents = async () =&gt; {
+    try {
+        console.log('Before asking parents');
+
+        const phone = await willGetNewPhone;
+        const message = await showOff(phone);
+
+        console.log(message);
+    }
+    catch (error) {
+        console.log(error.message);
+    }
+    finally {
+        console.log('After asking parents');
+    }
+};
+
+(async () =&gt; {
+    await askParents();
+})();
+</code></pre><h2>Exercises</h2><ol><li>Adapt the previous code.</li></ol></google-codelab-step><google-codelab-step label="Summary" duration="1"><p>Promises have become an integral part of several idioms in JavaScript, including the Async Functions standard used to make asynchronous code look synchronous.</p><p>Here is a checklist which breaks down the things we learned in this code lab.</p><ul class="checklist"><li>Creating a Promise.</li><li>Resolve and reject a promise.</li><li>Consume a promise using <code>.then</code> and <code>.catch</code>.</li><li>Chain promises.</li><li>Wait for all or nothing with <code>Promise.all</code></li><li>Wait for first with <code>Promise.race</code></li><li>Write asynchronous code in a synchronous way using <code>async/await</code></li></ul><h3>Resources</h3><ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promises <em>on MDN</em></a></li><li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function">async/await function <em>on MDN</em></a></li><li><a href="https://developers.google.com/web/fundamentals/primers/promises">JavaScript Promises <em>on Google Developers</em></a></li><li><a href="https://developers.google.com/web/fundamentals/primers/async-functions">Async functions - making promises friendly <em>on Google Developers</em></a></li></ul></google-codelab-step></google-codelab></template><script>Polymer({is:"codelab-promises",_twoWayBinding:function _twoWayBinding(value){return"{{"+value+"}}"},_oneWayBinding:function _oneWayBinding(value){return"[["+value+"]]"}});</script></dom-module></body></html>
