@@ -14,7 +14,7 @@
             "type": "image/png"
         }
     ],
-    "start_url": "/",
+    "start_url": "/fe-guild-2019-pwa-code-labs/",
     "display": "standalone",
     "theme_color": "#fff",
     "background_color": "#fff"
