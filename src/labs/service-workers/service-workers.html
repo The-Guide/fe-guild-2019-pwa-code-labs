@@ -1,0 +1,1093 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/codelab-components/google-codelab-elements.html">
+
+<dom-module id="codelab-service-workers">
+    <template>
+        <google-codelab title="Service Workers Basics" feedback-link="" environment="web" last-updated="2018-03-31">
+            <google-codelab-step label="Introduction" duration="1">
+                <h2>
+                    <strong>What is a service worker</strong>
+                </h2>
+
+                <p>
+                    A service worker is a script that your browser runs in the background, separate from a web page,
+                    opening the door to features that don't need a web page or user interaction. Today, they already
+                    include features like push notifications and background sync. In the future, service workers might
+                    support other things like periodic sync or geofencing. The core feature discussed in this code lab
+                    is the ability to intercept and handle network requests, including programmatically managing a cache
+                    of responses.
+                </p>
+
+                <p>
+                    The reason this is such an exciting API is that it allows you to support offline experiences, giving
+                    developers complete control over the experience.
+                </p>
+
+                <h2>
+                    <strong>What You'll Learn</strong>
+                </h2>
+
+                <ul class="checklist">
+                    <li>The Service Worker Lifecycle.</li>
+                    <li>Registering a Service Worker.</li>
+                    <li>Lifecycle and non-lifecycle events.</li>
+                    <li>Install to the Home screen.</li>
+                    <li>Getting that "App Install Banner" and then deferring it.</li>
+                    <li>Service Workers – Caching (including versioning and prechaching resources).</li>
+                </ul>
+
+                <h2>
+                    <strong>What you'll need</strong>
+                </h2>
+
+                <ul>
+                    <li>Firefox 61, Chrome 58, Edge 11, Safari 11.1, Opera 44 or above</li>
+                    <li>Your favorite text editor</li>
+                    <li>Basic knowledge of HTML, CSS and JavaScript (ES6/2015)</li>
+                </ul>
+            </google-codelab-step>
+            <google-codelab-step label="Getting set up" duration="3">
+                <h2>Project Set Up</h2>
+
+                <p>
+                    In this code lab we are building on top of the project started in the <code>Understanding the App
+                    Manifest</code> code lab.
+                </p>
+
+                <p>
+                    If you didn't do it already: <strong>Fork</strong> and then <strong>Clone</strong> the following
+                    repository: <code>https://github.com/raduenuca/fe-guild-2019-pwa.git</code>
+                </p>
+
+                <pre>
+<code>
+$ git clone https://github.com/[YOUR GITHUB PROFILE]/fe-guild-2019-pwa.git
+$ cd fe-guild-2019-pwa
+</code></pre>
+
+                <p>
+                    If you want to start directly with <code>Service Workers</code> checkout the following branch:
+                </p>
+
+                <pre><code>$ git checkout pwa-service-workers-init</code></pre>
+
+                <p>To start the project type in the terminal and open Chrome at <code>localhost:8080</code></p>
+
+                <pre><code>$ npm start</code></pre>
+            </google-codelab-step>
+            <google-codelab-step label="The Service Worker Lifecycle" duration="10">
+                <h2>The service worker life cycle</h2>
+
+                <p>
+                    A service worker has a lifecycle that is completely separate from your web page.
+                </p>
+
+                <p>
+                    With service workers, the following steps are generally observed for basic set up:
+                </p>
+
+                <ul>
+                    <li>
+                        To install a service worker for your site, you need to register it, which you do in your page's
+                        JavaScript. Registering a service worker will cause the browser to start the service worker
+                        install step in the background.
+                    </li>
+                    <li>
+                        Next is activation. When the service worker is installed, it then receives an activate event.
+                        The primary use of onactivate is for cleanup of resources used in previous versions of a Service
+                        worker script.
+                    </li>
+                    <li>
+                        The Service worker will now control pages, but only those opened after the
+                        <code>register()</code> is successful. i.e. a document starts life with or without a Service
+                        worker and maintains that for its lifetime. So documents will have to be reloaded to actually
+                        be controlled.
+                    </li>
+                </ul>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/sw-lifecycle.png">
+                </p>
+
+                <h2>Register a Service Worker</h2>
+
+                <p>
+                    To install a service worker you need to kick start the process by registering it in your page. This
+                    tells the browser where your service worker JavaScript file lives.
+                </p>
+
+                <p>
+                    Create a file named <code>sw.js</code> on the same level as <code>index.html</code> then in
+                    <code>src/js/app.js</code>:
+                </p>
+
+                <pre>
+<code>
+window.addEventListener('load', () => {
+    ...
+    // After the existing code
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(`${baseUrl}sw.js`)
+            .then( registration => {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        })
+        .catch(err => {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+        });
+    }
+});
+</code></pre>
+                <p>
+                    This code checks to see if the service worker API is available, and if it is, the service worker at
+                    <code>[baseUrl]/sw.js</code> is registered once the page is loaded.
+                </p>
+
+                <p>
+                    You can call <code>register()</code> every time a page loads without concern; the browser will
+                    figure out if the service worker is already registered or not and handle it accordingly.
+                </p>
+
+                <p>
+                    One subtlety with the <code>register()</code> method is the location of the service worker file.
+                    In this case that the service worker file is at the root of the domain. This means that the service
+                    worker's scope will be the entire origin. In other words, this service worker will receive fetch
+                    events for everything on this domain. If we register the service worker file at
+                    <code>/src/js/sw.js</code>, then the service worker would only see fetch events for pages whose URL
+                    starts with <code>/src/js/</code>.
+                </p>
+
+                <p>
+                    Now you can check that a service worker is enabled by opening the Chrome Develoer Tools and then
+                    <code>Application -> Service Workers</code>
+                </p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/dev-tools.png">
+                </p>
+
+                <p>
+                    You may find it useful to test your service worker in an Incognito window so that you can close and
+                    reopen knowing that the previous service worker won't affect the new window. Any registrations and
+                    caches created from within an Incognito window will be cleared out once that window is closed.
+                </p>
+
+                <h2>Why is my service worker failing to register?</h2>
+
+                <p>
+                    This could be for the following reasons:
+                </p>
+
+                <ul>
+                    <li>
+                        You are not running your application through HTTPS. During development you'll be able to use
+                        service worker through <code>localhost</code>, but to deploy it on a site you'll need to have
+                        HTTPS setup on your server.
+                    </li>
+                    <li>
+                        The path to your service worker file is not written correctly — it needs to be written relative
+                        to the origin, not your app’s root directory.
+                    </li>
+                    <li>
+                        The service worker being pointed to is on a different origin to that of your app. This is also
+                        not allowed.
+                    </li>
+                </ul>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/important-notes.png">
+                </p>
+
+                <h2>Exercises</h2>
+
+                <ol>
+                    <li>
+                        Update the application with the code above
+                    </li>
+                    <li>
+                        Check in Chrome Developer Tools that the service is active
+                    </li>
+                </ol>
+            </google-codelab-step>
+            <google-codelab-step label="Service Worker Events" duration="5">
+                <p>
+                    The below graphic shows a summary of the available service worker events:
+                </p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/sw-events.png">
+                </p>
+
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <strong>Event</strong>
+                        </td>
+                        <td>
+                            <strong>Description</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>install</code>
+                        </td>
+                        <td>
+                            It is sent when the service worker is being installed.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>activate</code>
+                        </td>
+                        <td>
+                            It is sent when the service worker has been registered and installed. This place is where
+                            you
+                            can clean up anything related to the older version of the service worker if it’s been
+                            updated.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>message</code>
+                        </td>
+                        <td>
+                            It is send when a message is received in a service worker from another context
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>fetch</code>
+                        </td>
+                        <td>
+                            It is sent whenever a page of your site requires a network resource. It can be a new page, a
+                            JSON API, an image, a CSS file, whatever.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>sync</code>
+                        </td>
+                        <td>
+                            It is sent if the browser previously detected that the connection was unavailable, and now
+                            signals the service worker that the internet connection is working.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>push</code>
+                        </td>
+                        <td>
+                            It is invoked by the Push API when a new push event is received.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <p>Let's listen to the main lifecycle events <code>install</code> and <code>activate</code></p>
+
+                <pre>
+<code>
+self.addEventListener('install', event => {
+    console.log('[Service Worker] Installing Service Worker ...', event);
+    event.waitUntil(self.skipWaiting());
+});
+
+self.addEventListener('activate', event => {
+    console.log('[Service Worker] Activating Service Worker ...', event);
+    return self.clients.claim();
+});
+</code></pre>
+                <p>
+                    In the <code>install</code> callback is calling the <code>skipWaiting()</code> function to
+                    trigger the <code>activate</code> event and tell the Service Worker to start working immediately
+                    without waiting for the user to navigate or reload the page.
+                </p>
+
+                <p>
+                    The <code>skipWaiting()</code> function forces the waiting Service Worker to become the active
+                    Service Worker. The <code>self.skipWaiting()</code> function can also be used with the <code>self
+                    .clients.claim()</code> function to ensure that updates to the underlying Service Worker
+                    take effect immediately.
+                </p>
+
+                <p>
+                    The code in the next listing can be combined with the <code>skipWaiting()</code> function in
+                    order to ensure that your Service Worker activates itself immediately.
+                </p>
+
+                <h2>Exercises</h2>
+
+                <ol>
+                    <li>
+                        Update the application with the code above
+                    </li>
+                    <li>
+                        Check in Chrome Developer Tools that the events are triggered
+                    </li>
+                </ol>
+            </google-codelab-step>
+            <google-codelab-step label="Add to Home Screen" duration="20">
+                <p>
+                    <strong>Add to Home Screen</strong>, sometimes referred to as the web app install prompt, makes it
+                    easy for users to install your Progressive Web App on their mobile or desktop device. After the user
+                    accepts the prompt, your PWA will be added to their launcher, and it will run like any other
+                    installed app.
+                </p>
+
+                <p>
+                    Chrome handles most of the heavy lifting for you:
+                </p>
+
+                <ul>
+                    <li>
+                        On mobile, Chrome will generate a WebAPK, creating an even more integrated experience for your
+                        users.
+                    </li>
+                    <li>On desktop, your app will installed, and run in an app window.</li>
+                </ul>
+
+                <h2>What are the criteria?</h2>
+
+                <p>
+                    In order for a user to be able to install your Progressive Web App, it needs to meet the following
+                    criteria:
+                </p>
+
+                <ul>
+                    <li>The web app is not already installed</li>
+                    <li>
+                        Meets a user engagement heuristic (currently, the user has interacted with the domain for at
+                        least 30 seconds)
+                    </li>
+                    <li>
+                        Includes a web app manifest that includes:
+                        <ul>
+                            <li><code>short_name</code> or <code>name</code></li>
+                            <li><code>icons</code> must include a 192px and a 512px sized icons</li>
+                            <li><code>start_url</code></li>
+                            <li>
+                                <code>display</code> must be one of: <code>fullscreen</code>, <code>standalone</code>,
+                                or <code>minimal-ui</code>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Served over HTTPS (required for service workers)</li>
+                    <li>
+                        Has registered a service worker with a <code>fetch</code> event handler
+                    </li>
+                </ul>
+
+                <p>
+                    When these criteria are met, Chrome will fire a <code>beforeinstallprompt</code> event that you can
+                    use to prompt the user to install your Progressive Web App.
+                </p>
+
+                <p>
+                    We meet all the criteria above, but one: we don't have a <code>fetch</code> event handler. Let's fix
+                    that
+                </p>
+
+                <pre>
+<code>
+self.addEventListener('fetch', event => {
+    console.log('[Service Worker] Fetching something ....', event);
+
+    // This fixes a weird bug in Chrome when you open the Developer Tools
+    if (event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') {
+        return;
+    }
+
+    event.respondWith(fetch(event.request));
+});
+</code></pre>
+                <p>
+                    In Chrome click the Customize button and select <code>Install Progressive Selfies...</code>
+                </p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/chrome-install.png">
+                </p>
+
+                <h2>App Install Banner</h2>
+
+                <aside class="note">
+                    <p>
+                        The <strong>App Install Banner</strong> will show up only on Chrome on Android but we really
+                        need to serve the app over HTTPS. In theory it could work on <code>localhost</code> with an
+                        Android device connected via USB cable but I didn't manage to make it work.
+                    </p>
+                </aside>
+
+                <p>
+                    The easiest way is to have the app served over <code>HTTPS</code> is to publish it to <code>GitHub
+                    Pages</code> but in order to do that there are several changes needed:
+                </p>
+
+                <ol>
+                    <li>
+                        <p>
+                            Hosting our site to <code>GitHub Pages</code> will place it under the following URL:
+                            <code>https://[YOUR GITHUB PROFILE].github.io/fe-guild-2019-pwa/</code> (assuming that you
+                            didn't change the repository name when forking). This means that our <code>base</code> tag
+                            needs to change to
+                        </p>
+                        <pre><code>&lt;base href="/fe-guild-2019-pwa/"&gt;</code></pre>
+                    </li>
+                    <li>
+                        <p>
+                            Changing the <code>base</code> tag will break our app locally. To fix that rename the
+                            <code>public</code> folder to <code>fe-guild-2019-pwa</code>. Stop and restart the
+                            app, and we can access it now on <code>localhost:8080/fe-guild-2019-pwa/</code>
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            To easily deploy to <code>GitHub Pages</code> install the <code>gh-pages</code> node
+                            package:
+                        </p>
+                        <pre><code>$ npm install gh-pages --save-dev</code></pre>
+                    </li>
+                    <li>
+                        <p>
+                            Add a new script to <code>package.json</code>
+                        <pre><code>"deploy": "gh-pages -d fe-guild-2019-pwa"</code></pre>
+                        and run
+                        </p>
+                        <pre><code>$ npm run deploy</code></pre>
+                        <p>
+                            First deployment will take longer because will create a new branch <code>gh-pages</code> and
+                            will activate <code>GitHub Pages</code> on this new branch.
+                        </p>
+                    </li>
+                    <li>
+                        Take a few minutes (max 5) break and try
+                        <pre><code>https://[YOUR GITHUB PROFILE].github.io/fe-guild-2019-pwa/</code></pre>
+                        You can now access the application from your phone, and if you have an Android phone you will
+                        also get an <code>App Install Banner</code> <em>(Try to group around a colleague that has one to
+                        see it in action)</em>.
+                    </li>
+                </ol>
+
+                <h3>Cancelling the prompt</h3>
+
+                <p>
+                    If for some reason you’d prefer not to show the Add to Home Screen banner, you can
+                    cancel it completely, as shown in the next listing. Depending on which type of web
+                    app you have, it may not make sense to show this prompt. Perhaps your site covers sensitive
+                    topics or a short-lived event for which the banner might be more annoying to
+                    the user than helpful.
+                </p>
+
+                <pre>
+<code>
+window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    return false;
+});
+</code></pre>
+                <p>
+                    The code in the listing above will listen for the <code>beforeinstallprompt</code> event and prevent
+                    the default behavior of the banner if it’s fired. The code is straightforward and uses the standard
+                    JavaScript preventDefault() functionality to cancel the event and returns a false value—both of
+                    which are needed to ensure that the banner doesn’t appear.
+                </p>
+
+                <h3>Determining usage</h3>
+
+                <p>
+                    The Add to Home Screen functionality can be helpful for your users, but it’s important
+                    to find out if it would be or not. Are your users annoyed by the banner and dismiss
+                    it when it appears? Do they trust your application enough to add it to their device?
+                </p>
+
+                <p>
+                    By listening for the <code>beforeinstallprompt</code> event, you can determine whether a
+                    user decided to add your web app to their home screen or if they dismissed it. The following
+                    listing shows how.
+                </p>
+
+                <pre>
+<code>
+window.addEventListener('beforeinstallprompt', event => {
+    // Determine the user's choice - returned as a Promise
+    event.userChoice.then(result => {
+        console.log(result.outcome);
+
+        // Based on the user's choice, decide how to proceed
+        if(result.outcome == 'dismissed') {
+            // Send to analytics
+        } else {
+            // Send to analytics
+        }
+    });
+});
+</code></pre>
+                <p>
+                    At this point, you could decide to send this information to your Web Analytics tools
+                    to track the usage of this functionality over time. This technique can be a useful
+                    approach for understanding how your users interact with your Add to Home Screen
+                    prompt.
+                </p>
+
+                <h3>Deferring the prompt</h3>
+
+                <p>
+                    Using a combination of the code in listings above, you can defer the <code>Add to Home Screen
+                    banner</code> to appear until a later time—for example, if a user visits a site and has met the
+                    criteria for the banner to be shown, but you’d prefer them to add your site by allowing them to tap
+                    a custom button on your site instead. This puts the user in control of whether or not they’d like
+                    to add your site, instead of the browser choosing when it should show the banner.
+                </p>
+
+                <p>In <code>src/js/app.js</code></p>
+
+                <pre>
+<code>
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', event => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    event.preventDefault();
+
+    console.log('beforeinstallprompt fired');
+
+    // Stash the event so it can be triggered later.
+    deferredPrompt = event;
+
+    return false;
+});
+</code></pre>
+                <p>In <code>src/js/feed.js</code> change the <code>openCreatePostModal</code> function</p>
+
+                <pre>
+<code>
+const openCreatePostModal = () => {
+    createPostArea.style.transform = 'translateY(0)';
+
+    if(deferredPrompt) {
+        deferredPrompt.prompt();
+
+        // Determine the user's choice - returned as a Promise
+        deferredPrompt.userChoice.then(result => {
+            console.log(result.outcome);
+
+            // Based on the user's choice, decide how to proceed
+            if (result.outcome === 'dismissed') {
+                // Send to analytics
+                console.log('User cancelled installation');
+            } else {
+                // Send to analytics
+                console.log('User added to home screen');
+            }
+        });
+
+        deferredPrompt = null;
+    }
+};
+</code></pre>
+                <p>Clicking the <code>FAB</code> button in the lower right corner will produce</p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/install-prompt-desktop.png">
+                </p>
+
+                <h2>Exercises</h2>
+
+                <ol>
+                    <li>Experiment with the code in this lesson</li>
+                    <li>Deploy the app on GitHub Pages</li>
+                    <li>Try to do it in stages in order to see the differences</li>
+                </ol>
+            </google-codelab-step>
+            <google-codelab-step label="Service Worker Caching" duration="30">
+                <p>
+                    Imagine you’re on a train using your mobile phone to browse your favorite website. Every time the
+                    train enters an area with an unreliable network, the website takes ages to load—an all-too-familiar
+                    scene. This is where Service Worker caching comes to the rescue. Caching ensures that your website
+                    loads as efficiently as possible for repeat visitors.
+                </p>
+
+                <h2>The basics of HTTP caching</h2>
+
+                <p>
+                    Modern browsers can interpret and understand a variety of HTTP requests and responses and are
+                    capable of storing and caching data until it’s needed. After the data has expired, it will go and
+                    fetch the updated version. This ensures that web pages load faster and use less bandwidth.
+                </p>
+
+                <p>
+                    A web server can take advantage of the browser’s ability to cache data and use it to improve the
+                    repeat request load time. If the user visits the same page twice within one session, there’s often
+                    no need to serve them a fresh version of the resources if the data hasn't changed. This way, a web
+                    server can use the Expires header to notify the web client that it can use the current copy of a
+                    resource until the specified “Expiry date.” In turn, the browser can cache this resource and only
+                    check again for a new version when it reaches the expiry date.
+                </p>
+
+                <p>
+                    HTTP caching is a fantastic way to improve the performance of your website, but it isn’t without
+                    flaws. Using HTTP caching means that you’re relying on the server to tell you when to cache a
+                    resource and when it expires. If you have content that has dependencies, any updates can cause the
+                    expiry dates sent by the server to easily become out of sync and affect your site.
+                </p>
+
+                <h2>The basics of caching Service Worker caching</h2>
+
+                <p>
+                    You may be wondering why you even need Service Worker caching if you have HTTP caching. How is
+                    Service Worker caching different? Well, instead of the server telling the browser how long to cache
+                    a resource, you are in complete control. Service Worker caching is extremely powerful because it
+                    gives you programmatic control over exactly how you cache your resources. As with all Progressive
+                    Web App (PWA) features, Service Worker caching is an enhancement to HTTP caching and works
+                    hand-in-hand with it.
+                </p>
+
+                <p>
+                    The power of Service Workers lies in their ability to intercept HTTP requests. In this lesson,
+                    we’ll use this ability to intercept HTTP requests and responses to provide users with a lightning
+                    fast response directly from cache.
+                </p>
+
+                <h3>Precaching during Service Worker installation</h3>
+
+                <p>
+                    Using Service Workers, you can tap into any incoming HTTP requests and decide exactly how you want
+                    to respond. In your Service Worker, you can write logic to decide what resources you’d like to
+                    cache, what conditions need to be met, and how long to cache a resource for.
+                </p>
+
+                <p>
+                    When the user visits the website for the first time, the Service Worker begins downloading and
+                    installing itself. During the installation stage, you can tap into this event and prime the cache
+                    with all the critical assets for the web app.
+                </p>
+
+                <p>
+                    In <code>sw.js</code>
+                </p>
+
+                <pre>
+<code>
+const CACHE_STATIC_NAME = 'static';
+const URLS_TO_PRECACHE = [
+    '/',
+    'index.html',
+    'src/js/app.js',
+    'src/js/feed.js',
+    'src/lib/material.min.js',
+    'src/lib/material.indigo-deep_orange.min.css',
+    'src/css/app.css',
+    'src/css/feed.css',
+    'src/images/main-image.jpg',
+    'https://fonts.googleapis.com/css?family=Roboto:400,700',
+    'https://fonts.googleapis.com/icon?family=Material+Icons',
+    // 'https://code.getmdl.io/1.3.0/material.indigo-deep_orange.min.css"'
+];
+
+self.addEventListener('install', event => {
+    console.log('[Service Worker] Installing Service Worker ...', event);
+    event.waitUntil(
+        caches.open(CACHE_STATIC_NAME)
+            .then(cache => {
+                console.log('[Service Worker] Precaching App Shell');
+                cache.addAll(URLS_TO_PRECACHE);
+            })
+            .then(() => {
+                console.log('[ServiceWorker] Skip waiting on install');
+                return self.skipWaiting();
+            })
+    );
+});
+</code></pre>
+                <p>
+                    The code above taps into the install event and adds a list of files <code>URLS_TO_PRECACHE</code>
+                    during this stage. It also references a variable called <code>CACHE_STATIC_NAME</code>. This is a
+                    string value that I’ve set to name the cache. You can name each cache differently and you can even
+                    have multiple different copies of the cache because each new string makes it unique. This will come
+                    in handy later in the lesson when we look at versioning and cache busting.
+                </p>
+
+                <p>
+                    You can see that once the cache has been opened, you can then begin to add resources into it. Next
+                    you call <code>cache.addAll()</code> and pass in your array of files. The
+                    <code>event.waitUntil()</code>
+                    method uses a JavaScript promise to know how long installation takes and whether it succeeded.
+                </p>
+
+                <p>
+                    Important to return the promise here to have <code>skipWaiting()</code> fire after the cache has
+                    been updated.
+                </p>
+
+                <p>
+                    If all the files are successfully cached, the Service Worker will be installed. If any of the files
+                    fails to download, the <code>install</code> step will fail. This is important because it means you
+                    need to rely on all the assets being present on the server and you need to be careful with the
+                    list of files that you decide to cache in the install step. Defining a long list of files will
+                    increase the chances that one file may fail to cache, leading to your Service Worker not being
+                    installed.
+                </p>
+
+                <aside class="warning">
+                    <p>
+                        This was the case with our material design CSS file
+                        <strong>material.indigo-deep_orange.min.css</strong>.
+                        It was served from a CDN that doesn't provide CORS headers. In this case I've chosen to download
+                        it and serve it from the <code>lib</code> folder instead.
+                    </p>
+                </aside>
+
+                <p>
+                    If you check now in Chrome Developer Tools you will see that the cache is filled with the static
+                    files
+                    from the <code>URLS_TO_PRECACHE</code> array:
+                </p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/sw-static-cache.png">
+                </p>
+
+                <p>
+                    But if you look in the <code>Network</code> tab (even after refresh) the files are still fetched
+                    over
+                    the network:
+                </p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/sw-from-network.png">
+                </p>
+
+                <p>
+                    The reason is that the cache is primed and ready to go, but we are not reading assets from it.
+                    In order to do that we need to add the code in the next listing to our Service Worker in order to
+                    start listening to the fetch event.
+                </p>
+
+                <pre>
+<code>
+self.addEventListener('fetch', event => {
+    console.log('[Service Worker] Fetching something ....', event);
+
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => {
+                if (response) {
+                    console.log(response);
+                    return response;
+                }
+
+                return fetch(event.request);
+            })
+    );
+});
+</code></pre>
+                <p>
+                    We are checking if the incoming URL matches anything that might exist in our current cache using
+                    the <code>caches.match()</code> function. If it does, return that cached resource, but if the
+                    resource doesn't exist in cache, continue as normal and fetch the requested resource.
+                </p>
+
+                <p>
+                    After the Service Worker installs and activates refresh the page and check again the
+                    <code>Network</code>
+                    tab. The Service Worker will now intercept the HTTP request and load the appropriate resources
+                    instantly from cache instead of making a network request to the server.
+                </p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/sw-from-cache.png">
+                </p>
+
+                <p>
+                    At this moment if we set <code>Offline</code> mode in the <code>Network</code> tab our app will look
+                    like this:
+                </p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/service-workers/sw-offline-basic.png">
+                </p>
+
+                <aside class="note">
+                    <p>
+                        The fonts are cached but not loaded, and if you try to navigate while offline to the
+                        <code>help</code> page, you will get the dreadful <code>The site can't be reached</code> the
+                        page.
+                    </p>
+                    <p>
+                        <strong>We are going to fix this later.</strong>
+                    </p>
+                </aside>
+
+                <h3>Intercept and cache</h3>
+
+                <p>
+                    So far we cached important resources during the installation of a Service Worker, which is known as
+                    precaching. This works well when you know exactly the resources that you want to cache, but what
+                    about resources that might be dynamic or that you might not know about? For example, our website
+                    might be a sports news website that needs constant updating during a match; we won’t know about
+                    those files during Service Worker installation.
+                </p>
+
+                <p>
+                    Because Service Workers can intercept HTTP requests, this is the perfect opportunity to make the
+                    HTTP request and then store the response in cache. This means that we will request the resource
+                    and then cache it immediately. That way, as the next HTTP request is made for the same resource,
+                    we can instantly fetch it out of the Service Worker cache.
+                </p>
+
+                <p>In <code>sw.js</code></p>
+
+                <pre>
+<code>
+// Add a new cache for dynamic content
+const CACHE_DYNAMIC_NAME = 'dynamic';
+
+self.addEventListener('fetch', event => {
+    console.log('[Service Worker] Fetching something ....', event);
+
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => {
+                if (response) {
+                    console.log(response);
+                    return response;
+                }
+
+                // Clone the request - a request is a stream and can be only consumed once
+                const requestToCache = event.request.clone();
+
+                // Try to make the original HTTP request as intended
+                return fetch(requestToCache)
+                    .then(response => {
+                        // If request fails or server responds with an error code, return that error immediately
+                        if (!response || response.status !== 200) {
+                            return response;
+                        }
+
+                        // Again clone the response because you need to add it into the cache and because it's used
+                        // for the final return response
+                        const responseToCache = response.clone();
+
+                        caches.open(CACHE_DYNAMIC_NAME)
+                            .then(cache => {
+                                cache.put(requestToCache, responseToCache);
+                            });
+
+                        return response;
+                    })
+            })
+            .catch(error => console.log('[Service Worker] Dynamic cache error.', error))
+    );
+});
+</code></pre>
+                <p>
+                    The code above caches the resource fetched from the network and returns it back to the page. If we
+                    reload the page the resources cached in both caches will be matched.
+                </p>
+
+                <h3>Cache versioning</h3>
+
+                <p>
+                    There will be a point in time where the Service Worker cache will need updating. If we make changes
+                    to the web application, when need to be sure users receive the newer version of files instead of
+                    older versions. As you can imagine, serving older files by mistake would cause havoc on a site.
+                </p>
+
+                <p>
+                    The great thing about Service Workers is that each time we make any changes to the Service Worker
+                    file itself, it automatically triggers the Service Worker update flow. In lesson 3, we looked at
+                    the Service Worker lifecycle. Remember that when a user navigates to the site, the browser tries
+                    to re-download the Service Worker in the background. If there’s even a byte’s difference in the
+                    Service Worker file compared to what it currently has, it considers it new.
+                </p>
+
+                <p>
+                    This useful functionality gives you the perfect opportunity to update your cache with new files. The
+                    best things to change are the <code>cache</code> names by adding a version to them. But if we update
+                    cache name, this would automatically create a new cache and start serving your files from that
+                    cache.
+                    The original cache would be orphaned and no longer used, and we need to delete it. The best place to
+                    delete after the old Service Worker is the <code>activate</code> event.
+                </p>
+
+                <p>In <code>sw.js</code> first add <code>_v1</code> to both cache names:</p>
+
+                <pre>
+<code>
+const CACHE_STATIC_NAME = 'static_v1';
+const CACHE_DYNAMIC_NAME = 'dynamic_v1';
+</code></pre>
+                <p>Then adapt the <code>activate</code> callback:</p>
+
+                <pre>
+<code>
+self.addEventListener('activate', event => {
+    console.log('[Service Worker] Activating Service Worker ...', event);
+
+    event.waitUntil(
+        caches.keys()
+            .then(cacheNames => {
+                return Promise.all(cacheNames.map(cacheName => {
+                    if (cacheName !== CACHE_STATIC_NAME && cacheName !== CACHE_DYNAMIC_NAME) {
+                        console.log('[Service Worker] Removing old cache.', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                }));
+            })
+            .then(() => {
+                console.log('[ServiceWorker] Claiming clients');
+                return self.clients.claim();
+            })
+    );
+});
+</code></pre>
+
+                <h2>Custom <code>Offline page</code></h2>
+
+                <p>
+                    Even if we cache the <code>help</code> page when we navigate to it we may happen to become offline
+                    before it gets cached, and in this case we get the browser's default offline page. To account for
+                    this case we can create our own <code>offline.html</code> page:
+                </p>
+
+                <ol>
+                    <li>
+                        Duplicate the <code>index.html</code> file and name the duplicate <code>offline.html</code>
+                    </li>
+                    <li>
+                        Replace the <code>main</code> tag with
+                        <pre>
+<code>
+&lt;main class="mdl-layout__content mat-typography"&gt;
+  &lt;div class="page-content"&gt;
+    &lt;h5 class="text-center mdl-color-text--primary">We're sorry, this page hasn't been cached yet :/&lt;/h5&gt;
+    &lt;p>But why don't you try one of our &lt;a href="/fe-guild-2019-pwa/">other pages&lt;/a&gt;?&lt;/p&gt;
+    &lt;/div>
+&lt;/main>
+</code></pre>
+                    </li>
+                    <li>
+                        Add the <code>offline.html</code> to the list of files to be precached.
+                    </li>
+                    <li>
+                        Increase the version of the <code>static</code> cache.
+                    </li>
+                    <li>
+                        Then inside the <code>fetch</code> handler replace the
+                        <pre><code>.catch(error => console.log('[Service Worker] Dynamic cache error.', error)));</code></pre>
+                        with
+                        <pre>
+<code>
+.catch(error => {
+    return caches.open(CACHE_STATIC_NAME)
+      .then(cache => {
+        if (event.request.headers.get('accept').includes('text/html')) {
+          return cache.match('/fe-guild-2019-pwa/offline.html');
+        }
+      });
+})
+</code></pre>
+                    </li>
+                    <li>
+                        Finally refresh the application, manually delete the <code>help</code> page entry in the dynamic
+                        cache if you have it.
+                    </li>
+                    <li>
+                        Go offline and try to navigate to the help page. You should see the new <code>offline</code>
+                        page
+                        being displayed.
+                    </li>
+                </ol>
+
+                <h2>Exercises</h2>
+
+                <ol>
+                    <li>Experiment with the code in this lesson</li>
+                    <li>Try to do it in stages in order to see the differences</li>
+                    <li>(Optional) Deploy the app on GitHub Pages</li>
+                </ol>
+            </google-codelab-step>
+            <google-codelab-step label="Summary" duration="1">
+                <p>
+                    HTTP caching is a fantastic way to improve the performance of your website, but it isn’t without
+                    flaws.
+                </p>
+
+                <p>
+                    Service Worker caching is extremely powerful because it gives you programmatic control over exactly
+                    how you cache your resources. When used hand-in-hand with HTTP caching, you get the best of both
+                    worlds.
+                </p>
+
+                <p>
+                    Used correctly, Service Worker caching is a massive performance enhancement and bandwidth saver.
+                </p>
+
+                <p>
+                    You can use a number of different approaches to cache resources, and each of them can be adapted to
+                    suit the needs of your users.
+                </p>
+
+                <h2>What's next?</h2>
+
+                <p>
+                    We are going to simplify Service Worker Management with WorkBox and look at different
+                    caching strategies.
+                </p>
+
+                <p>
+                    Here is a checklist which breaks down the things we learned in this code lab.
+                </p>
+
+                <ul class="checklist">
+                    <li>Service Worker <code>lifecycle</code> and most important <code>events</code>.</li>
+                    <li>Add to Home Screen, get the Install Banner and deferring it until later</li>
+                    <li>Precache required static resources and dynamically cache the rest.</li>
+                </ul>
+
+                <h3>Resources</h3>
+
+                <ul>
+                    <li>
+                        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API">
+                            Service Worker API <em>on MDN</em>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://developers.google.com/web/fundamentals/primers/service-workers/">
+                            Service Workers: an Introduction <em>on Google Developers</em>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://developers.google.com/web/fundamentals/app-install-banners/">
+                            Add to Home Screen <em>on Apple Developers</em>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://serviceworke.rs/">
+                            The Service Worker Cookbook
+                        </a>
+                    </li>
+                </ul>
+            </google-codelab-step>
+        </google-codelab>
+    </template>
+    <script>
+        Polymer({
+            is: 'codelab-service-workers',
+
+            _twoWayBinding: function (value) {
+                return '{{' + value + '}}';
+            },
+
+            _oneWayBinding: function (value) {
+                return '[[' + value + ']]';
+            }
+        });
+    </script>
+</dom-module>
