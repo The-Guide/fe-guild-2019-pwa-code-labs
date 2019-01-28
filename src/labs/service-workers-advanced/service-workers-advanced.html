@@ -1,0 +1,322 @@
+<html><head></head><body><dom-module id="codelab-service-workers-advanced"><template><google-codelab title="Service Workers - Keeping your data synchronized" feedback-link="" environment="web" last-updated="2019-01-28"><google-codelab-step label="Introduction" duration="1"><p>When I’m trying to access information on the go on my mobile phone, nothing is more frustrating than not being able to get to that information I need so desperately, especially when I know that I’ve viewed a certain web page before. Fortunately, you can build Progressive Web Apps (PWAs) to deal with such situations. In this code lab, you’ll learn how to build web apps that can work offline and deal with situations where you may be in an area with poor or no network coverage at all.</p><h2><strong>What You'll Learn</strong></h2><ul class="checklist"><li>How to use the power of Service Workers to build resilient web apps that work with no connection.</li><li>How to build PWAs that cater to situations where the user has a network connection, but it’s slow, flaky, or prone to drop occasionally.</li><li>Take the offline web a step further and look at a new web API called BackgroundSync.</li></ul><h2><strong>What you'll need</strong></h2><ul><li>Chrome 49 or above</li><li>Your favorite text editor</li><li>Basic knowledge of HTML, CSS and JavaScript (ES6/2015)</li><li>Basic knowledge of IndexedDB</li><li>Basic knowledge of Fetch API</li></ul></google-codelab-step><google-codelab-step label="Getting set up" duration="3"><h2>Project Set Up</h2><p>In this code lab we are building on top of the project started in the <code>Service Worker Management with WorkBox</code> code lab.</p><p>If you didn't do it already: <strong>Fork</strong> and then <strong>Clone</strong> the following repository: <code>https://github.com/raduenuca/fe-guild-2019-pwa.git</code></p><pre><code>
+$ git clone https://github.com/[YOUR GITHUB PROFILE]/fe-guild-2019-pwa.git
+$ cd fe-guild-2019-pwa
+</code></pre><p>If you want to start directly with <code>Service Workers - Keeping your data synchronized</code> checkout the following branch:</p><pre><code>$ git checkout pwa-sw-advanced-init</code></pre><p>To start the project type in the terminal:</p><pre><code>$ npm start</code></pre><p>and open the browser at <code>localhost:8080/fe-guild-2019-pwa/</code></p><p>In this code lab we are also going to connect the front end with the backend (<strong>FINALLY!!!</strong>).</p><p><strong>Fork</strong> and then <strong>Clone</strong> the following repository: <code>https://github.com/raduenuca/fe-guild-2019-pwa-server.git</code></p><pre><code>
+$ git clone https://github.com/[YOUR GITHUB PROFILE]/fe-guild-2019-pwa-server.git
+$ cd fe-guild-2019-pwa-server
+</code></pre><p>Install dependencies</p><pre><code>$ npm install</code></pre><p>To start the project type in the terminal:</p><pre><code>$ npm start</code></pre><p>the server will be hosted at <code>localhost:3000</code></p></google-codelab-step><google-codelab-step label="Taking and displaying selfies" duration="20"><h2>Submitting selfies</h2><p>In <strong>index.html</strong> inside the <code>div</code> with <code>id</code> <strong>create-post</strong> there is a <code>form</code> tag. We are going to use it to submit the data. Don't worry about the picture for the moment, the server will give us a dummy one back.</p><p>In <strong>feed.js</strong></p><pre><code>
+const form = document.querySelector('form');
+const titleInput = document.querySelector('#title');
+const locationInput = document.querySelector('#location');
+
+const API_URL = 'http://localhost:3000/selfies';
+
+form.addEventListener('submit', event =&gt; {
+    event.preventDefault();
+
+    if (titleInput.value.trim() === '' || locationInput.value.trim() === '') {
+        // Very professional validation
+        alert('Please enter valid data!');
+        return;
+    }
+
+    closeCreatePostModal();
+
+    const id = new Date().getTime();
+    const postData = new FormData();
+    postData.append('id', id);
+    postData.append('title', titleInput.value);
+    postData.append('location', locationInput.value);
+
+    fetch(API_URL, {method: 'POST', body: postData})
+        .then(response =&gt; {
+            console.log('Sent data', response);
+        });
+});
+</code></pre><h3>Explanation</h3><ol><li>First we declare a reference to the tags of interest <code>form</code>, <code>title</code> and <code>location</code> text boxes.</li><li>Then we declare the <code>API_URL</code></li><li>Lastly we attach an <strong>event listener</strong> for the <code>submit</code> event of the <code>form</code>. We do a simple <code>fetch</code> to <code>POST</code> the form data</li></ol><h3>Exercises</h3><ol><li>Update the <code>feed.js</code> with the code above</li><li>Don't forget to run <code>npm run build</code> to update the <code>sw.js</code>. Because we changed the <code>feed.js</code> file it's <code>revision</code> will also change inside <code>sw.js</code></li><li>Make sure the new service worker is active:<ul><li><strong>Nuke version:</strong> Application -&gt; Clear storage and then refresh</li><li><strong>Best version:</strong> Refresh the page and <code>skipInstall</code> on the Service Worker</li><li><strong>Ain't nobody got time for that version:</strong> Refresh the page, close the tab and open it back again</li></ul></li><li>You can navigate to <code>localhost:3000/selfies</code> to admire yourself</li></ol><h2>Displaying selfies</h2><p>So far we are sending data to the backend but we don't display anything in the frontend. Let's change that</p><p>We will display the selfies as cards with picture, title and location but first let read the selfies from the server</p><p>In <code>feed.js</code></p><pre><code>
+fetch(API_URL)
+    .then(response=&gt; response.json())
+    .then(data =&gt; {
+        console.log('From server', data);
+    });
+</code></pre><p>If you follow all the above procedures to refresh the Service Worker then you should see in <code>Console</code> the data retrieved from the server. It is not an array but an object with the <code>ids</code> of each selfie as a key. We need to convert this to an array and update the UI</p><pre><code>
+fetch(API_URL)
+    .then(response=&gt; response.json())
+    .then(data =&gt; {
+        console.log('From server', data);
+        const selfies = [];
+        for (const key in data) {
+            selfies.push(data[key]);
+        }
+        updateUI(selfies);
+    });
+</code></pre><p>There is no <code>updateUI</code> function yet so let's write this next</p><pre><code>
+const updateUI = selfies =&gt; {
+    clearCards();
+    selfies.forEach(selfie =&gt; createCard(selfie));
+};
+</code></pre><p>Now there is an <code>updateUI</code> function but we just introduced two additional ones</p><p><code>clearCards()</code> will clear all the previously created cards for us</p><pre><code>
+const sharedMomentsArea = document.querySelector('#shared-moments');
+
+const clearCards = () =&gt; {
+    while (sharedMomentsArea.hasChildNodes()) {
+        sharedMomentsArea.removeChild(sharedMomentsArea.lastChild);
+    }
+};
+</code></pre><p>The parent for the selfie cards will be a <code>div</code> with the id <code>shared-moments</code> so we save a reference to it. Then inside the <code>clearCards()</code> function we remove all the children form it.</p><p><code>createCard(selfie)</code> will create the HTML content of the card and add it to the parent</p><pre><code>
+const createCard = selfie =&gt; {
+    const cardWrapper = document.createElement('div');
+    cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
+
+    const cardTitle = document.createElement('div');
+    cardTitle.className = 'mdl-card__title';
+    cardTitle.style.backgroundImage = 'url(' + selfie.selfieUrl + ')';
+    cardTitle.style.backgroundSize = 'cover';
+    cardWrapper.appendChild(cardTitle);
+
+    const cardTitleTextElement = document.createElement('h2');
+    cardTitleTextElement.style.color = 'white';
+    cardTitleTextElement.className = 'mdl-card__title-text';
+    cardTitleTextElement.textContent = selfie.title;
+    cardTitle.appendChild(cardTitleTextElement);
+
+    const cardSupportingText = document.createElement('div');
+    cardSupportingText.className = 'mdl-card__supporting-text';
+    cardSupportingText.textContent = selfie.location;
+    cardSupportingText.style.textAlign = 'center';
+    cardWrapper.appendChild(cardSupportingText);
+
+    // Material design lite stuff
+    componentHandler.upgradeElement(cardWrapper);
+
+    sharedMomentsArea.appendChild(cardWrapper);
+};
+</code></pre><p>Refresh (<strong><em>with all the ceremonies</em></strong>) and you should see something...clearly in need of some <code>CSS</code>.</p><p>In <code>feed.css</code></p><pre><code>
+.shared-moment-card.mdl-card {
+    margin: 10px auto;
+    width: 80%;
+}
+
+@media (min-width: 600px) {
+    .shared-moment-card.mdl-card {
+        width: 60%;
+    }
+}
+
+@media (min-width: 1000px) {
+    .shared-moment-card.mdl-card {
+        width: 45%;
+    }
+}
+
+.shared-moment-card .mdl-card__title {
+    height: 140px;
+}
+
+@media (min-height: 700px) {
+    .shared-moment-card .mdl-card__title {
+        height: 160px;
+    }
+}
+
+@media (min-height: 1000px) {
+    .shared-moment-card .mdl-card__title {
+        height: 200px;
+    }
+}
+</code></pre><p>Now everything should look nice.</p><h3>Testing on mobile</h3><aside class="note"><p><strong>Deploying</strong> the server or using a <code>serverless</code> solution is the subject for another code lab so we have two options:</p><ul><li><p><strong>Hot spot</strong>: This should work for every one. Simply create a hot spot on your phone and connect your laptop's WiFi to it. If you restart the application <code>http-server</code> will show an <strong>Available on</strong> followed by a list of URLs where the application can be accessed.</p><p>Change the <code>API_URL</code> to that address, build and refresh on mobile. You should be able to post and see the pictures of the posts that you made on mobile. Any older content will be under <code>localhost:3000</code> and will not show any image.</p></li><li><strong>Remote debugging via USB cable</strong>: This will work everywhere for <code>Android</code> phone users (in combination with Chrome and only on Mac with Safari for <code>iPhone</code> users. While connected simply open the app on the phone.</li></ul></aside><h2>"Taking" selfies</h2><p>In double quotes (") because we are going to use a <code>file</code> input for the moment and not the camera (other <code>code lab</code>) but on mobile you should get the option to take a photo and use that as a file.</p><p>In <code>index.html</code> just above the <code>form</code> tag</p><pre><code>
+&lt;div id="pick-image"&gt;
+    &lt;h6&gt;Pick an Image instead&lt;/h6&gt;
+    &lt;input type="file" accept="image/*" id="image-picker"&gt;
+&lt;/div&gt;
+</code></pre><p>The <code>file</code> input will be our fallback if we cannot use the camera so we already prepare the the terrain.</p><p>Now back in <code>feed.js</code></p><pre><code>
+const imagePicker = document.querySelector('#image-picker');
+let picture;
+
+imagePicker.addEventListener('change', event =&gt; picture = event.target.files[0]);
+</code></pre><h3>Explanation</h3><ol><li>Save a reference to the <code>file</code> input</li><li>We will save the image (from disk or camera) in the <code>picture</code> variable</li><li>Add an event handler for the <code>change</code> event of the <code>file</code> input and set the uploaded file to the <code>picture</code> variable.</li></ol><h3>Exercises</h3><ol><li>Update the application with the code above</li><li>Test on both desktop and mobile (if you are able to)</li><li>On mobile take a picture instead of uploading a file.</li></ol></google-codelab-step><google-codelab-step label="Browsing selfies offline" duration="15"><p>So far we can take selfies and see our weird duck faces, but we cannot admire ourselves offline. It is high time to fix this.</p><p>We are going to use IndexedDB to cache our selfies and to enable that we need to add some utilities</p><ol><li>Add <a href="https://raw.githubusercontent.com/jakearchibald/idb/master/build/idb.js">idb.js</a> to the <code>src/lib</code> folder</li><li>Create an empty <code>utility.js</code> file inside the <code>src/js</code> folder (<strong><em>we will write code for it later</em></strong>)</li><li>Make sure you reference the two files:<p>In <code>index.html</code></p><pre><code>
+&lt;script defer src="src/lib/material.min.js"&gt;&lt;/script&gt;
+&lt;script src="src/lib/idb.js"&gt;&lt;/script&gt;
+&lt;script src="src/js/utility.js"&gt;&lt;/script&gt;
+&lt;script src="src/js/app.js"&gt;&lt;/script&gt;
+&lt;script src="src/js/feed.js"&gt;&lt;/script&gt;
+</code></pre><p>In <code>sw-template.js</code></p><pre><code>
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.5.0/workbox-sw.js');
+importScripts('src/lib/idb.js');
+importScripts('src/js/utility.js');
+</code></pre></li></ol><h3><code>utility.js</code></h3><p>This file will have code needed by both the Service Worker and the app itself</p><p>Start by moving the <code>API_URL</code> and add a little twist</p><pre><code>
+// TODO: Change this with your own local IP (either localhost/127.0.0.1)
+// or the IP assigned by the phone hot spot
+const SERVER_URL = 'http://192.168.1.162:3000';
+const API_URL = `${SERVER_URL}/selfies`;
+</code></pre><p>Next we need code to manage an <code>IndexedDB</code> database and stores. We want to open the database, write data to a store, read all data, delete all data or delete just one item.</p><aside class="note"><p>The code below is explained in the <strong>IndexedDB Basics</strong> code lab. If you need extra details hop there for some extra explanations. You can also skip that and treat it like utility code.</p></aside><pre><code>
+const dbPromise = idb.openDb('selfies-store', 1, upgradeDB =&gt; {
+    if (!upgradeDB.objectStoreNames.contains('selfies')) {
+        upgradeDB.createObjectStore('selfies', {keyPath: 'id'});
+    }
+});
+
+const writeData = (storeName, data) =&gt; {
+    return dbPromise
+        .then(db =&gt; {
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            store.put(data);
+            return tx.complete;
+        });
+};
+
+const readAllData = storeName =&gt; {
+    return dbPromise
+        .then(db =&gt; {
+            const tx = db.transaction(storeName, 'readonly');
+            const store = tx.objectStore(storeName);
+            return store.getAll();
+        });
+};
+
+const clearAllData = storeName =&gt; {
+    return dbPromise
+        .then(db =&gt; {
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            store.clear();
+            return tx.complete;
+        });
+};
+
+const deleteItemFromData = (storeName, id) =&gt; {
+    dbPromise
+        .then(db =&gt; {
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            store.delete(id);
+            return tx.complete;
+        })
+        .then(() =&gt; console.log('Item deleted!'));
+};
+</code></pre><h2><code>sw-template.js</code></h2><p>Let's first cache the selfies as they arrive from the server. For that we need to register a route in <code>sw-template.js</code></p><pre><code>
+workbox.routing.registerRoute(API_URL, args =&gt; {
+    return fetch(args.event.request)
+        .then(response =&gt; {
+            const clonedResponse = response.clone();
+            clearAllData('selfies')
+                .then(() =&gt; clonedResponse.json())
+                .then(selfies =&gt; {
+                    for (const selfie in selfies) {
+                        writeData('selfies', selfies[selfie])
+                    }
+                });
+            return response;
+        });
+});
+</code></pre><h3>Explanation</h3><p>We register a route for the <code>API_URL</code> and if the <code>fetch</code> is successful we call the <code>clearAllData</code> function to delete all entries from the <code>selfies</code> store. After everything is deleted we call <code>writeData</code> to save the fresh data from the server, and return the <code>response</code> back to the UI.</p><p>We now need to get the selfies from the <code>IndexedDB</code> store in case we don't receive anything from the network.</p><p>In <code>feed.js</code> adjust the <code>fetch</code> for selfies like this:</p><pre><code>
+let networkDataReceived = false;
+fetch(API_URL)
+    .then(response =&gt; response.json())
+    .then(data =&gt; {
+        console.log('From server', data);
+        networkDataReceived = true;
+        const selfies = [];
+        for (const key in data) {
+            selfies.push(data[key]);
+        }
+        updateUI(selfies);
+    });
+</code></pre><p>Notice the presence of the <code>networkDataReceived</code> variable. By default it is set to <code>false</code> but when we get data we set it to <code>true</code>.</p><p>Next add code to read the selfies from <code>IndexedDB</code> if <strong>networkDataReceived</strong> is <code>false</code></p><pre><code>
+if ('indexedDB' in window) {
+    readAllData('selfies')
+        .then(selfies =&gt; {
+            if (!networkDataReceived) {
+                console.log('From cache', selfies);
+                updateUI(selfies);
+            }
+        });
+}
+</code></pre><h3>Explanation</h3><p>We first check to see if <code>IndexedDB</code> is supported. Notice that we didn't check for it in the Service Worker. If the broswer support <code>service workers</code> will also support <code>IndexedDB</code>. Then we read the data from the <code>selfies</code> store by calling the <code>readAllData</code> function and if <strong>networkDataReceived</strong> is false we update the UI.</p><h2>Exercises</h2><ol><li>Implement and experiment with the code above</li><li>Try to take your app offline and manually add selfies. Either directly in the <code>data/selfies.json</code> on the server application or by using <code>POSTMAN</code></li><li>Try to see what happens if you have a slow network (adjust it from the <code>Network</code> tab in <strong>Chrome Developer Tools</strong></li><li>While offline you can only see the <code>title</code> and <code>location</code> of the selfies, but no image. See if you can add a route in the service worker for it.</li></ol></google-codelab-step><google-codelab-step label="Taking selfies offline" duration="10"><h2>Understanding BackgroundSync</h2><p>The <code>BackgroundSync</code> API allows users to queue data that needs to be sent to the server while a user is working offline, and then as soon as they’re online again, it sends the queued data to the server. This is useful for when you want to ensure that what your user submits to the server truly gets sent. To give you a quick example of this on a practical level, say a user needs to be able to edit the details of a blog post using a Content Management System (CMS). If the CMS uses Service Workers and BackgroundSync, the user can edit the contents of the blog post offline, and then the CMS will sync the results when the user is online again. This functionality allows users to work on the go, regardless of whether they’re connected to the internet.</p><p>So far, we’ve been focusing on building websites that can function when the user is offline and dealing with situations where unreliable networks can cause failures. This functionality is great, but until now most of these pages have been read-only—you’re only loading web pages and displaying information. What if you wanted the user to send something to the server while the user is offline? For example, they may want to save something important using their web app, safe in the knowledge that when they re-establish a network connection, their important information will be sent through to the server. BackgroundSync was built to handle that scenario.</p><p>BackgroundSync is a new web API that lets you defer actions until the user has stable connectivity, which makes it great for ensuring that whatever the user wants to send is sent when they regain connectivity. For example, let’s say someone using the Progressive Selfies web app wants to take a selfie in the perfect spot but there is no signal and the app is offline. With BackgroundSync, they can "send" can do that while offline, and once they regain connectivity, the Service Worker will send the data in the background.</p><h2>Sync selfies</h2><p>To apply <code>BackgroundSync</code> to our app we need to create a store in our <strong>IndexedDB</strong> database to hold our <em>"to be synced selfies"</em>.</p><p>We do that in <code>utility.js</code></p><pre><code>
+const dbPromise = idb.openDb('selfies-store', 1, upgradeDB =&gt; {
+    if (!upgradeDB.objectStoreNames.contains('selfies')) {
+        upgradeDB.createObjectStore('selfies', {keyPath: 'id'});
+    }
+
+    if (!upgradeDB.objectStoreNames.contains('sync-selfies')) {
+        upgradeDB.createObjectStore('sync-selfies', {keyPath: 'id'});
+    }
+});
+</code></pre><p>The code should be self explanatory.</p><p>Next we need to change the way we send data to the server. We will always use <code>BackgroundSync</code> unless the browser doesn't support it</p><p>In <code>feed.js</code></p><pre><code>
+form.addEventListener('submit', event =&gt; {
+    event.preventDefault();
+
+    if (titleInput.value.trim() === '' || locationInput.value.trim() === '') {
+        // Very professional validation
+        alert('Please enter valid data!');
+        return;
+    }
+
+    closeCreatePostModal();
+
+    const id = new Date().getTime();
+
+    if ('serviceWorker' in navigator &amp;&amp; 'SyncManager' in window) {
+        navigator.serviceWorker.ready
+            .then(sw =&gt; {
+                const selfie = {
+                    id: id,
+                    title: titleInput.value,
+                    location: locationInput.value,
+                    selfie: picture,
+                };
+                writeData('sync-selfies', selfie)
+                    .then(() =&gt; sw.sync.register('sync-new-selfies'))
+                    .then(() =&gt; {
+                        const snackbarContainer = document.querySelector('#confirmation-toast');
+                        const data = {message: 'Your Selfie was saved for syncing!'};
+                        snackbarContainer.MaterialSnackbar.showSnackbar(data);
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    });
+            });
+    } else {
+        const postData = new FormData();
+        postData.append('id', id);
+        postData.append('title', titleInput.value);
+        postData.append('location', locationInput.value);
+        postData.append('selfie', picture);
+
+        fetch(API_URL, {method: 'POST', body: postData})
+            .then(response =&gt; console.log('Sent data', response));
+    }
+});
+</code></pre><h3>Explanation</h3><p>Let's start with the obvious: the first part of the code including the generation of the <code>id</code> is the same.</p><p>First, we do a simple check to see if the browser supports Service Workers. If it does, and if the Service Worker is ready register a sync with the tag <code>sync-new-posts</code>. This is a simple string that is used to recognize this event. You can think of these sync tags as simple labels for different actions. You can have as many as you want.</p><p>We’re registering a sync using the registration object and providing it with a tag to identify it. Each sync must have a unique tag name because if we register a sync using the same tag as a pending sync, they will combine together. If the user tries to send seven messages while offline, they’ll only get one sync when they regain connectivity. If you did want this to happen seven times, you need to use seven unique tag names.</p><p>Finally, we retrieve the values from the input fields and save them into the IndexedDB. With these values stored safely in the IndexedDB, you can retrieve them when the sync event takes place in the Service Worker.</p><p>If everything was successful we show a <code>toast</code> message to the user.</p><h3>The Service Worker</h3><p>Before BackgroundSync will function correctly, you need to update the Service Worker code. The following listing contains the code that will respond to our newly created sync event.</p><p>In <code>sw-template.js</code></p><pre><code>
+self.addEventListener('sync', event =&gt; {
+    console.log('[Service Worker] Background syncing', event);
+    if (event.tag === 'sync-new-selfies') {
+        console.log('[Service Worker] Syncing new Posts');
+        event.waitUntil(
+            readAllData('sync-selfies')
+                .then(syncSelfies =&gt; {
+                    for (const syncSelfie of syncSelfies) {
+                        const postData = new FormData();
+                        postData.append('id', syncSelfie.id);
+                        postData.append('title', syncSelfie.title);
+                        postData.append('location', syncSelfie.location);
+                        postData.append('selfie', syncSelfie.selfie);
+
+                        fetch(API_URL, {method: 'POST', body: postData})
+                            .then(response =&gt; {
+                                console.log('Sent data', response);
+                                if (response.ok) {
+                                    response.json()
+                                        .then(resData =&gt; {
+                                            deleteItemFromData('sync-selfies', parseInt(resData.id));
+                                        });
+                                }
+                            })
+                            .catch(error =&gt; console.log('Error while sending data', error));
+                    }
+                })
+        );
+    }
+});
+</code></pre><h3>Explanation</h3><p>The listing above adds an event listener for the sync event. This event will only fire when the browser believes that the user has connectivity. You may also notice the check to confirm that the current event has a tag that matches the string 'sync-new-selfies'. This tag was added to the submit listener. If ywe didn't have this tag, the sync event would fire every time the user had connectivity and process your logic repeatedly.</p><p>Next, we retrieve the payload values that were stored in the IndexedDB when the user clicked the submit button. With these values, we then use the fetch API to POST the values to the server. The last step in the logic is to clean up afterwards and remove the values that are stored in the IndexedDB to ensure that you don’t have any old data lying around.</p><p>If all these steps were successful, the fetch request will return a successful result. If for any reason the fetch request wasn’t successful, the BackgroundSync API will try again. BackgroundSync has some clever retry functionality built into it to deal with a situation where the promise might fail.</p><p>Like most Service Worker–based code, BackgroundSync expects a promise because it needs to signal to the browser that the sync event is ongoing, and it needs to keep the Service Worker active if possible. If for any reason the fetch request failed and it received a promise that rejected, it will signal the browser that the sync failed, and this will cause the browser to reschedule the event. This functionality is handy when you want to ensure that what your user submits gets sent.</p><p>Under the hood, the browser might combine syncs together to reduce the number of times that the current device, network connection (radio), and browser need to wake up. Although these event timings may be combined, you still get a new event per pending sync.</p><h3>Testing</h3><p>Believe it or not, testing all this is easier than you think: once you’ve visited the page and your Service Worker is active, all you need to do is disconnect from the network by unplugging the network cable, disabling your Wi-Fi, or changing your network connection using the Developer Tools.</p></google-codelab-step><google-codelab-step label="Summary" duration="1"><p>BackgroundSync is a new web API that lets you defer actions until the user has stable connectivity. It behaves similar to the outbox on an email client—messages are queued up in the outbox and as soon as there’s a connection, they’re sent.</p><p>Tags are useful because they allow you to “tag” a specific event so you know how to respond appropriately in your sync. Each sync needs to have a unique tag name.</p><p>Used correctly, Service Worker caching is a massive performance enhancement and bandwidth saver.</p><p>You can test BackgroundSync in action by disabling your connection to the network; as soon as you re-connect, your queued syncs will be sent</p><p>Here is a checklist which breaks down the things we learned in this code lab.</p><ul class="checklist"><li>Built resilient web apps that work with no connection using the power of Service Workers</li><li>Took the offline web a step further and had a look at a new web API called BackgroundSync.</li></ul><h3>Resources</h3><ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/SyncManager">SyncManager <em>on MDN</em></a></li><li><a href="https://developers.google.com/web/updates/2015/12/background-sync">Introducing Background Sync <em>on Google Developers</em></a></li><li><a href="https://github.com/WICG/BackgroundSync/blob/master/explainer.md">Background synchronization explained</a></li></ul></google-codelab-step></google-codelab></template><script>Polymer({is:"codelab-service-workers-advanced",_twoWayBinding:function _twoWayBinding(value){return"{{"+value+"}}"},_oneWayBinding:function _oneWayBinding(value){return"[["+value+"]]"}});</script></dom-module></body></html>
