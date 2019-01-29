@@ -2,8 +2,8 @@
     {
         "category": "About",
         "slug": "about",
-        "title": "About the Codelabs - Start Here",
-        "updated": "2019-01-25T16:50:00Z",
+        "title": "About Progressive Web Applications (Start Here)",
+        "updated": "2019-01-29T13:20:00Z",
         "author": "Radu Enuca",
         "duration": 0,
         "tags": ""
@@ -36,14 +36,14 @@
         "category": "HTML",
         "slug": "app-manifest",
         "title": "Understanding the App Manifest",
-        "updated": "2019-01-22T08:35:00Z",
+        "updated": "2019-01-29T11:50:00Z",
         "author": "Radu Enuca",
         "duration": 40
     },
     {
         "category": "JavaScript",
         "slug": "service-workers",
-        "title": "Service Workers Basics",
+        "title": "Introduction to Service Workers",
         "updated": "2019-01-27T21:00:00Z",
         "author": "Radu Enuca",
         "duration": 70
@@ -59,8 +59,8 @@
     {
         "category": "JavaScript",
         "slug": "service-workers-advanced",
-        "title": "Service Workers - Keeping your data synchronized",
-        "updated": "2019-01-28T23:12:00Z",
+        "title": "Keeping your data synchronized with BackgroundSync API",
+        "updated": "2019-01-29T12:32:00Z",
         "author": "Radu Enuca",
         "duration": 50
     }

@@ -6,7 +6,10 @@
 
 <dom-module id="codelab-service-workers">
     <template>
-        <google-codelab title="Service Workers Basics" feedback-link="" environment="web" last-updated="2018-03-31">
+        <google-codelab title="Introduction to Service Workers"
+                        feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues"
+                        environment="web"
+                        last-updated="2019-01-29">
             <google-codelab-step label="Introduction" duration="1">
                 <h2>
                     <strong>What is a service worker</strong>
@@ -31,12 +34,12 @@
                 </h2>
 
                 <ul class="checklist">
-                    <li>The Service Worker Lifecycle.</li>
-                    <li>Registering a Service Worker.</li>
-                    <li>Lifecycle and non-lifecycle events.</li>
-                    <li>Install to the Home screen.</li>
-                    <li>Getting that "App Install Banner" and then deferring it.</li>
-                    <li>Service Workers – Caching (including versioning and prechaching resources).</li>
+                    <li>The Service Worker Lifecycle</li>
+                    <li>Registering a Service Worker</li>
+                    <li>Lifecycle and non-lifecycle events</li>
+                    <li>Install to the Home screen</li>
+                    <li>Getting that "App Install Banner" and then deferring it</li>
+                    <li>Caching - including versioning and prechaching resources</li>
                 </ul>
 
                 <h2>
@@ -493,8 +496,8 @@ window.addEventListener('beforeinstallprompt', event => {
                 <p>
                     The code in the listing above will listen for the <code>beforeinstallprompt</code> event and prevent
                     the default behavior of the banner if it’s fired. The code is straightforward and uses the standard
-                    JavaScript preventDefault() functionality to cancel the event and returns a false value—both of
-                    which are needed to ensure that the banner doesn’t appear.
+                    JavaScript <code>preventDefault()</code> function to cancel the event and returns a false value—both
+                    of which are needed to ensure that the banner doesn't appear.
                 </p>
 
                 <h3>Determining usage</h3>
@@ -599,7 +602,7 @@ const openCreatePostModal = () => {
                 <h2>Exercises</h2>
 
                 <ol>
-                    <li>Experiment with the code in this lesson</li>
+                    <li>Experiment with the code in this step</li>
                     <li>Deploy the app on GitHub Pages</li>
                     <li>Try to do it in stages in order to see the differences</li>
                 </ol>
@@ -648,7 +651,7 @@ const openCreatePostModal = () => {
                 </p>
 
                 <p>
-                    The power of Service Workers lies in their ability to intercept HTTP requests. In this lesson,
+                    The power of Service Workers lies in their ability to intercept HTTP requests. In this step,
                     we’ll use this ability to intercept HTTP requests and responses to provide users with a lightning
                     fast response directly from cache.
                 </p>
@@ -709,7 +712,7 @@ self.addEventListener('install', event => {
                     during this stage. It also references a variable called <code>CACHE_STATIC_NAME</code>. This is a
                     string value that I’ve set to name the cache. You can name each cache differently and you can even
                     have multiple different copies of the cache because each new string makes it unique. This will come
-                    in handy later in the lesson when we look at versioning and cache busting.
+                    in handy later in the step when we look at versioning and cache busting.
                 </p>
 
                 <p>
@@ -900,7 +903,7 @@ self.addEventListener('fetch', event => {
 
                 <p>
                     The great thing about Service Workers is that each time we make any changes to the Service Worker
-                    file itself, it automatically triggers the Service Worker update flow. In lesson 3, we looked at
+                    file itself, it automatically triggers the Service Worker update flow. In step 3, we looked at
                     the Service Worker lifecycle. Remember that when a user navigates to the site, the browser tries
                     to re-download the Service Worker in the background. If there’s even a byte’s difference in the
                     Service Worker file compared to what it currently has, it considers it new.
@@ -1007,7 +1010,7 @@ self.addEventListener('activate', event => {
                 <h2>Exercises</h2>
 
                 <ol>
-                    <li>Experiment with the code in this lesson</li>
+                    <li>Experiment with the code in this step</li>
                     <li>Try to do it in stages in order to see the differences</li>
                     <li>(Optional) Deploy the app on GitHub Pages</li>
                 </ol>
@@ -1036,21 +1039,22 @@ self.addEventListener('activate', event => {
                 <h2>What's next?</h2>
 
                 <p>
-                    We are going to simplify Service Worker Management with WorkBox and look at different
-                    caching strategies.
+                    We are going to simplify Service Worker Management with Workbox.
                 </p>
+
+                <h2>What we've learned</h2>
 
                 <p>
                     Here is a checklist which breaks down the things we learned in this code lab.
                 </p>
 
                 <ul class="checklist">
-                    <li>Service Worker <code>lifecycle</code> and most important <code>events</code>.</li>
+                    <li>Service Worker <code>lifecycle</code> and most important <code>events</code></li>
                     <li>Add to Home Screen, get the Install Banner and deferring it until later</li>
-                    <li>Precache required static resources and dynamically cache the rest.</li>
+                    <li>Precache required static resources and dynamically cache the rest</li>
                 </ul>
 
-                <h3>Resources</h3>
+                <h2>Resources</h2>
 
                 <ul>
                     <li>

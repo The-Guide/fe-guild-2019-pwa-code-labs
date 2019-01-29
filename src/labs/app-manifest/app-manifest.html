@@ -6,8 +6,10 @@
 
 <dom-module id="codelab-app-manifest">
     <template>
-        <google-codelab title="Understanding the App Manifest" feedback-link="" environment="web"
-                        last-updated="2019-01-25">
+        <google-codelab title="Understanding the App Manifest"
+                        feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues"
+                        environment="web"
+                        last-updated="2019-01-29">
             <google-codelab-step label="Introduction" duration="1">
                 <p>
                     The web app manifest is a simple JSON file that tells the browser about your web application and how
@@ -26,12 +28,11 @@
                 </h2>
 
                 <ul class="checklist">
-                    <li>Create the manifest.</li>
-                    <li>Tell the browser about your manifest.</li>
-                    <li>Key manifest properties.</li>
-                    <li>Dealing with different browsers.</li>
-                    <li>Dealing with different browsers.</li>
-                    <li>Generating the manifest and other assets.</li>
+                    <li>Create the manifest</li>
+                    <li>Tell the browser about your manifest</li>
+                    <li>Key manifest properties</li>
+                    <li>Dealing with different browsers</li>
+                    <li>Generating the manifest and other assets</li>
                 </ul>
 
                 <h2>
@@ -379,7 +380,56 @@ $ cd fe-guild-2019-pwa
 
                 <pre>
 <code>
-
+{
+    "name": "Progressive Selfies",
+    "short_name": "PWA Selfies",
+    "icons": [
+        {
+            "src": "src/images/icons/app-icon-48x48.png",
+            "type": "image/png",
+            "sizes": "48x48"
+        },
+        {
+            "src": "src/images/icons/app-icon-96x96.png",
+            "type": "image/png",
+            "sizes": "96x96"
+        },
+        {
+            "src": "src/images/icons/app-icon-144x144.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        },
+        {
+            "src": "src/images/icons/app-icon-192x192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "src/images/icons/app-icon-256x256.png",
+            "type": "image/png",
+            "sizes": "256x256"
+        },
+        {
+            "src": "src/images/icons/app-icon-384x384.png",
+            "type": "image/png",
+            "sizes": "384x384"
+        },
+        {
+            "src": "src/images/icons/app-icon-512x512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "/fe-guild-2019-pwa/index.html",
+    "scope": ".",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#fff",
+    "theme_color": "#3f51b5",
+    "description": "Take selfies PWA style.",
+    "dir": "ltr",
+    "lang": "en-US"
+}
 </code></pre>
                 <h2>Exercises</h2>
 
@@ -420,7 +470,7 @@ $ cd fe-guild-2019-pwa
 
                 <p>
                     The second way is to set the <code>display</code> property of your Web App Manifest to
-                    <code>standalone</code> (see previous lesson).
+                    <code>standalone</code> (see previous step).
                 </p>
 
                 <h2>Change the status bar</h2>
@@ -607,7 +657,7 @@ body {
                 <h2>Exercises</h2>
 
                 <ul>
-                    <li>Experiment with the code in this lesson</li>
+                    <li>Experiment with the code in this step</li>
                     <li>Try to add the properties one by one and observe the differences</li>
                 </ul>
 
@@ -748,17 +798,19 @@ window.addEventListener('load', () => {
                     lab.
                 </p>
 
+                <h2>What we've learned</h2>
+
                 <p>
                     Here is a checklist which breaks down the things we learned in this code lab.
                 </p>
 
                 <ul class="checklist">
-                    <li>Create an link a web app manifest.</li>
-                    <li>Configure Safari specific properties.</li>
-                    <li>Dynamically create and set a manifest.</li>
+                    <li>Create an link a web app manifest</li>
+                    <li>Configure Safari specific properties</li>
+                    <li>Dynamically create and set a manifest</li>
                 </ul>
 
-                <h3>Resources</h3>
+                <h2>Resources</h2>
 
                 <ul>
                     <li>

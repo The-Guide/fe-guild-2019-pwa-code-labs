@@ -6,8 +6,10 @@
 
 <dom-module id="codelab-service-workers-advanced">
     <template>
-        <google-codelab title="Service Workers - Keeping your data synchronized" feedback-link="" environment="web"
-                        last-updated="2019-01-28">
+        <google-codelab title="Keeping your data synchronized with BackgroundSync API"
+                        feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues"
+                        environment="web"
+                        last-updated="2019-01-29">
             <google-codelab-step label="Introduction" duration="1">
                 <p>
                     When I’m trying to access information on the go on my mobile phone, nothing is more frustrating than
@@ -24,18 +26,18 @@
                 <ul class="checklist">
                     <li>
                         How to use the power of Service Workers to build resilient web apps that work with no
-                        connection.
+                        connection
                     </li>
                     <li>
                         How to build PWAs that cater to situations where the user has a network connection, but it’s
-                        slow, flaky, or prone to drop occasionally.
+                        slow, flaky, or prone to drop occasionally
                     </li>
                     <li>
-                        Take the offline web a step further and look at a new web API called BackgroundSync.
+                        Take the offline web a step further and look at a new web API called BackgroundSync
                     </li>
-                    <!--<li>-->
-                        <!--Dive into a soon-to-be-released feature called <code>PeriodicSync</code>-->
-                    <!--</li>-->
+                    <li>
+                        Dive into a soon-to-be-released feature called <code>PeriodicSync</code>
+                    </li>
                 </ul>
 
                 <h2>
@@ -112,7 +114,7 @@ $ cd fe-guild-2019-pwa-server
                 <p>the server will be hosted at <code>localhost:3000</code></p>
 
             </google-codelab-step>
-            <google-codelab-step label="Taking and displaying selfies" duration="20">
+            <google-codelab-step label="Taking and displaying selfies" duration="19">
                 <h2>Submitting selfies</h2>
 
                 <p>
@@ -452,7 +454,7 @@ imagePicker.addEventListener('change', event => picture = event.target.files[0])
                 </ol>
 
             </google-codelab-step>
-            <google-codelab-step label="Browsing selfies offline" duration="15">
+            <google-codelab-step label="Browsing selfies offline" duration="14">
                 <p>
                     So far we can take selfies and see our weird duck faces, but we cannot admire ourselves offline.
                     It is high time to fix this.
@@ -894,7 +896,8 @@ self.addEventListener('sync', event => {
 
                 <p>
                     Like most Service Worker–based code, BackgroundSync expects a promise because it needs to signal to
-                    the browser that the sync event is ongoing, and it needs to keep the Service Worker active if possible.
+                    the browser that the sync event is ongoing, and it needs to keep the Service Worker active if
+                    possible.
                     If for any reason the fetch request failed and it received a promise that rejected, it will signal
                     the browser that the sync failed, and this will cause the browser to reschedule the event. This
                     functionality is handy when you want to ensure that what your user submits gets sent.
@@ -912,6 +915,84 @@ self.addEventListener('sync', event => {
                     Believe it or not, testing all this is easier than you think: once you’ve visited the page and your
                     Service Worker is active, all you need to do is disconnect from the network by unplugging the
                     network cable, disabling your Wi-Fi, or changing your network connection using the Developer Tools.
+                </p>
+            </google-codelab-step>
+            <google-codelab-step label="Periodic synchronization" duration="2">
+                <p>
+                    Imagine the following scenario: a user opens up their phone to see that they already have the latest
+                    selfies for the Progressive Selfies App—which is strange because they’re currently offline and
+                    haven’t visited the web app today. Instead, a sync happened in the background while they were
+                    sleeping. New data was synced to their phone before they even woke up and was available for them in
+                    an instant. Very impressive!
+                </p>
+
+                <p>
+                    This feature, known as <code>PeriodicSync</code>, allows you to schedule a sync for a predetermined
+                    time. It’s simple to set up, doesn't require any server configuration, andallows the browser to
+                    optimize when it fires in order to be helpful and less disruptive to the user.
+                </p>
+
+                <p>
+                    At the time of writing this code lab, <code>PeriodicSync</code> is still being developed (and is
+                    therefore subject to change), but it will be available in browsers shortly. It is powerful
+                    functionality that's worth sharing, which is why I wanted to include it here at this early stage.
+                    The following listing gives you an idea of what this code might look like when it is released.
+                </p>
+
+                <pre>
+<code>
+if ('serviceWorker' in navigator && 'SyncManager' in window) {
+    navigator.serviceWorker.ready.then(sw => {
+        sw.periodicSync.register({
+            tag: 'get-latest-selfies',
+            minPeriod: 12 * 60 * 60 * 1000,
+            powerState: 'avoid-draining',
+            networkState: 'avoid-cellular'
+        })
+            .then(periodicSyncReg => console.log('Success!'))
+            .catch(error => console.log('Error', error))
+    });
+}
+</code></pre>
+                <p>
+                    This code is similar to the code for registering <code>BackgroundSync</code>, except you’re
+                    registering a <code>PeriodicSync</code>.Similar to BackgroundSync, you need to register the sync
+                    with a tag name in order to identify how to respond accordingly, and much like BackgroundSync, each
+                    tag name needs to be unique to ensure that a different action takes place.
+                </p>
+
+                <p>
+                    You’ll notice that the <strong>PeriodicSync API</strong> also accepts a value called
+                    <code>minPeriod</code>. This value is used to determine the minimum time between sync events and is
+                    set in milliseconds.If you set the value to 0, it will allow the browser to fire the event as
+                    frequently
+                    as it wants.
+                </p>
+
+                <p>
+                    Because syncs will run repeatedly, it’s important that the PeriodicSync API take into account the
+                    battery and network state of the device it’s running on. As developers,
+                    we need to be responsible to our users and not drain their battery or generate
+                    hefty mobile bills. Configuring properties such as <code>powerState</code> can avoid such events
+                    because they can either be set to <code>'auto'</code> or <code>'avoid-draining'</code>.
+                    <code>'auto'</code> allows syncs to occur during battery drain, but it may be restricted if the
+                    device has battery-saving mode enabled. <code>'avoid-draining'</code> will delay syncs on
+                    battery-powered devices while the battery isn’t charging.
+                </p>
+                <p>
+                    You can also determine the network usage
+                    of a device by configuring the <code>networkState</code> property. By setting the value to
+                    <code>'avoid-cellular'</code>, the browser will delay syncs while the device is connected to a
+                    cellular network. <code>'online'</code> will delay syncs if the device is online, and
+                    <code>'any'</code> is similar to <code>'online'</code>, except syncs may happen while the device is
+                    offline.
+                </p>
+                <p>
+                    It’s worth noting that <code>PeriodicSync</code> isn't meant to be an exact timer. Although the API
+                    accepts a <code>minPeriod</code> in milliseconds, it could mean that the sync might not fire exactly
+                    on time. All this could be due to network connection, battery state, or the settings of the current
+                    device. Due to the nature of PeriodicSync requiring device resources, it’s highly likely that it
+                    will require opt-in permission from the user.
                 </p>
             </google-codelab-step>
             <google-codelab-step label="Summary" duration="1">
@@ -936,6 +1017,14 @@ self.addEventListener('sync', event => {
                 </p>
 
                 <p>
+                    Another new API called PeriodicSync allows you to schedule a sync for a predetermined time; it has a
+                    number of settings that allow you to schedule how frequently to run, which network connections it
+                    can run under, and the allowed battery states of the device to run on.
+                </p>
+
+                <h2>What we've learned</h2>
+
+                <p>
                     Here is a checklist which breaks down the things we learned in this code lab.
                 </p>
 
@@ -944,11 +1033,11 @@ self.addEventListener('sync', event => {
                         Built resilient web apps that work with no connection using the power of Service Workers
                     </li>
                     <li>
-                        Took the offline web a step further and had a look at a new web API called BackgroundSync.
+                        Took the offline web a step further and had a look at a new web API called BackgroundSync
                     </li>
                 </ul>
 
-                <h3>Resources</h3>
+                <h2>Resources</h2>
 
                 <ul>
                     <li>
