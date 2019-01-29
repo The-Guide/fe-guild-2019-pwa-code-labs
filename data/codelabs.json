@@ -63,5 +63,21 @@
         "updated": "2019-01-29T12:32:00Z",
         "author": "Radu Enuca",
         "duration": 50
+    },
+    {
+        "category": "JavaScript",
+        "slug": "web-push",
+        "title": "Web Push Notifications (In progress)",
+        "updated": "2019-01-29T12:32:00Z",
+        "author": "Radu Enuca",
+        "duration": 45
+    },
+    {
+        "category": "JavaScript",
+        "slug": "beyond-pwas",
+        "title": "Beyond PWAs (In progress)",
+        "updated": "2019-01-29T12:32:00Z",
+        "author": "Radu Enuca",
+        "duration": 45
     }
 ]
