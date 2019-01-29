@@ -1,0 +1,44 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/codelab-components/google-codelab-elements.html">
+
+<dom-module id="codelab-beyond-pwas">
+    <template>
+        <google-codelab title="Beyond PWAs"
+                        feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues"
+                        environment="web"
+                        last-updated="2019-01-29">
+            <google-codelab-step label="Introduction" duration="2">
+                <h2>
+                    <strong>What You'll Learn</strong>
+                </h2>
+
+                <ul class="checklist">
+                    <li>Hardware access</li>
+                    <li>Web Streams API</li>
+                    <li>Web Bluetooth</li>
+                    <li>Web Share API</li>
+                    <li>Payment Request API</li>
+                    <li>Shape Detection API</li>
+                </ul>
+            </google-codelab-step>
+            <google-codelab-step label="Summary" duration="1">
+            </google-codelab-step>
+        </google-codelab>
+    </template>
+    <script>
+        Polymer({
+            is: 'codelab-beyond-pwas',
+
+            _twoWayBinding: function (value) {
+                return '{{' + value + '}}';
+            },
+
+            _oneWayBinding: function (value) {
+                return '[[' + value + ']]';
+            }
+        });
+    </script>
+</dom-module>

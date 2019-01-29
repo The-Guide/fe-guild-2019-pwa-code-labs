@@ -6,12 +6,14 @@
         "src/feguild2019-workshop-codelabs.html",
         "src/labs/about/about.html",
         "src/labs/app-manifest/app-manifest.html",
+        "src/labs/beyond-pwas/beyond-pwas.html",
         "src/labs/fetch-api/fetch-api.html",
         "src/labs/indexed-db/indexed-db.html",
         "src/labs/promises/promises.html",
         "src/labs/service-workers/service-workers.html",
         "src/labs/service-workers-advanced/service-workers-advanced.html",
-        "src/labs/workbox/workbox.html"
+        "src/labs/workbox/workbox.html",
+        "src/labs/web-push/web-push.html"
     ],
     "sources": [
         "src/**/*",

@@ -1,0 +1,432 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/codelab-components/google-codelab-elements.html">
+
+<dom-module id="codelab-web-push">
+    <template>
+        <google-codelab title="Web Push Notifications"
+                        feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues"
+                        environment="web"
+                        last-updated="2019-01-29">
+            <google-codelab-step label="Introduction" duration="2">
+                <p>
+                    Most modern web apps need the ability to update and communicate with their users on a regular basis.
+                    Communication channels such as social media, emails, and in-app notifications are great, but they
+                    don’t always grab the attention of the user, especially when the user navigates away from the
+                    website.
+                </p>
+
+                <p>
+                    This is where push notifications come in. They’re those helpful notifications that appear on your
+                    device that prompt you about information that could be useful to you. You can swipe or tap away to
+                    close them, or you can tap them and be instantly directed to a web page with the relevant
+                    information. Traditionally, only native applications had this amazing ability to tap into the
+                    operating system of a device and send push notifications. This is where PWAs are a game changer.
+                    They have the ability to receive push notifications that appear in the browser.
+                </p>
+
+                <p>
+                    The best thing about push notifications is that the user receives them even when they aren't
+                    browsing your site. The experience looks and feels like a native app and works even if the browser
+                    isn't running. This makes it a perfect way to engage with users and draw them back to your web app
+                    even if they haven't opened the browser in a while. For example, if your website is a weather
+                    application, a push notification could provide your users with useful information such as warnings
+                    about approaching bad weather. You could even schedule weekly weather forecasts that can be sent
+                    as a push notification, depending on how your users subscribe. The possibilities are endless.
+                </p>
+
+                <p>
+                    But what about malicious websites using this technology to send spammy push notifications? In order
+                    to send push messages to a user, the user first needs to opt in to your messages.Once a user has
+                    either accepted or blocked the push notification prompt, the prompt won't appear again. It's
+                    important to note that that this prompt will only appear if the site is running over HTTPS, has a
+                    registered Service Worker, and you have written code for it.
+                </p>
+
+                <h2>
+                    <strong>What You'll Learn</strong>
+                </h2>
+
+                <ul class="checklist">
+                    <li>Subscribing to notifications</li>
+                    <li>VAPID protocol</li>
+                    <li>Sending notifications</li>
+                    <li>Receiving and interacting with notifications</li>
+                    <li>Unsubscribing</li>
+                </ul>
+
+                <h2>
+                    <strong>What you'll need</strong>
+                </h2>
+
+                <ul>
+                    <li>Chrome 67, Edge 17, Firefox 61, Opera 44 or above</li>
+                    <li>Your favorite text editor</li>
+                    <li>Basic knowledge of HTML and JSON</li>
+                </ul>
+            </google-codelab-step>
+            <google-codelab-step label="Getting set up" duration="3">
+                <h2>Project Set Up</h2>
+
+                <p>
+                    In this code lab we are building on top of the project started in the
+                    <code>IKeeping your data synchronized with BackgroundSync API</code> code lab.
+                </p>
+
+                <p>
+                    If you didn't do it already: <strong>Fork</strong> and then <strong>Clone</strong> the following
+                    repository: <code>https://github.com/The-Guide/fe-guild-2019-pwa.git</code>
+                </p>
+
+                <pre>
+<code>
+$ git clone https://github.com/[YOUR GITHUB PROFILE]/fe-guild-2019-pwa.git
+$ cd fe-guild-2019-pwa
+</code></pre>
+
+                <p>
+                    If you want to start directly with <code>Web Push Notifications</code> checkout the following
+                    branch:
+                </p>
+
+                <pre><code>$ git checkout pwa-web-push-init</code></pre>
+
+                <p>
+                    To start the project type in the terminal and open Chrome at
+                    <code>localhost:8080/fe-guild-2019-pwa/</code>
+                </p>
+
+                <pre><code>$ npm start</code></pre>
+
+                <p>
+                    In this code lab we are also using the server so in case you didn't do it already
+                    <strong>fork</strong> and then <strong>clone</strong> the following
+                    repository: <code>https://github.com/The-Guide/fe-guild-2019-pwa-server.git</code>
+                </p>
+
+                <pre>
+<code>
+$ git clone https://github.com/[YOUR GITHUB PROFILE]/fe-guild-2019-pwa-server.git
+$ cd fe-guild-2019-pwa-server
+</code></pre>
+                <p>Install dependencies</p>
+
+                <pre><code>$ npm install</code></pre>
+
+                <p>
+                    To start the project type in the terminal:
+                </p>
+
+                <pre><code>$ npm start</code></pre>
+
+                <p>the server will be hosted at <code>localhost:3000</code></p>
+            </google-codelab-step>
+            <google-codelab-step label="User Permissions" duration="5">
+                <p>
+                    The browser displays a prompt asking a user if they'd like to opt in to notifications.
+                    If they accept, you can save their subscription details on the server and use them to send
+                    notifications later. These subscription details are unique to each user, device, and browser, so if
+                    a user logs in to your site on multiple devices, they'll be prompted once per device.
+                </p>
+
+                <p>
+                    Once they've accepted, you can use these stored subscription details to send messages to a user
+                    later with a scheduled task that updates users with timely information.
+                </p>
+
+                <p>
+                    Before you can start sending notifications to a user, you need to ask their permission by displaying
+                    a prompt. This prompt functionality is built into the browser by default, but first you need to add
+                    a little code to ensure that this prompt is initiated. If a user accepts the prompt, you'll be
+                    provided with a subscription object containing information about their subscription. But if a user
+                    denies the prompt, you won't be able to send them any messages, and they won't be prompted again.
+                    This ensures that you aren't able to annoyingly prompt users every time they visit your site.
+                </p>
+
+                <h2>User permissions</h2>
+
+                <p>In <code>app.js</code></p>
+
+                <pre>
+<code>
+const enableNotificationsButtons = document.querySelectorAll('.enable-notifications');
+
+const askForNotificationPermission = () => {
+    Notification.requestPermission(result=> {
+        console.log('User Choice', result);
+        if (result !== 'granted') {
+            console.log('No notification permission granted!');
+        } else {
+            console.log('Notification permission granted!');
+        }
+    });
+};
+
+if ('Notification' in window) {
+    for (let i = 0; i < enableNotificationsButtons.length; i++) {
+        enableNotificationsButtons[i].style.display = 'inline-block';
+        enableNotificationsButtons[i].addEventListener('click', askForNotificationPermission);
+    }
+}
+</code></pre>
+                <h3>Explanation</h3>
+
+                <p>
+                    We ask the user for permission when clicking any of the <code>Enable Notifications</code> buttons.
+                    The buttons should be visible only if the browser supports notifications.
+                </p>
+
+                <p>Also in <code>app.css</code></p>
+
+                <pre>
+<code>
+.enable-notifications {
+    display: none;
+}
+</code></pre>
+            </google-codelab-step>
+            <google-codelab-step label="Displaying a Notification" duration="7">
+                <p>
+                    Instead of logging to the console let's show a notification to the user when we receive permissions
+                </p>
+
+                <p>In <code>app.js</code></p>
+
+                <pre>
+<code>
+const displayConfirmNotification = () => {
+    const options = {
+        body: 'You successfully subscribed to our Notification service!'
+    };
+    new Notification('Successfully subscribed!', options);
+};
+
+const askForNotificationPermission = () => {
+    Notification.requestPermission(result=> {
+        console.log('User Choice', result);
+        if (result !== 'granted') {
+            console.log('No notification permission granted!');
+        } else {
+            displayConfirmNotification();
+        }
+    });
+};
+</code></pre>
+                <h3>Notifications options</h3>
+
+                <p>
+                    Notifications can be sent from the <code>Service Worker</code> registraton and can receive an <code>options</code>
+                    object that can control both the <code>visual</code> and <code>behavioral</code> aspect of the
+                    notification.
+                </p>
+
+                <p>In <code>app.js</code></p>
+
+                <pre>
+<code>
+const displayConfirmNotification = () => {
+    if ('serviceWorker' in navigator) {
+        const options = {
+            body: 'You successfully subscribed to our Notification service!',
+            icon: 'src/images/icons/app-icon-96x96.png',
+            image: 'src/images/main-image-sm.jpg',
+            dir: 'ltr',
+            lang: 'en-US', // BCP 47,
+            vibrate: [100, 50, 200],
+            badge: 'src/images/icons/app-icon-96x96.png'
+        };
+
+        navigator.serviceWorker.ready
+            .then(sw => sw.showNotification('Successfully subscribed (from SW)!', options));
+    }
+};
+</code></pre>
+                <p>And, for example in my case on Windows 10, you should be able to see something like this</p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/web-push/notification.png">
+                </p>
+
+                <p>
+                    Options can be any of the following:
+                </p>
+
+                <pre>
+<code>
+{
+  "//": "Visual Options",
+  "body": "&lt;String&gt;",
+  "icon": "&lt;URL String&gt;",
+  "image": "&lt;URL String&gt;",
+  "badge": "&lt;URL String&gt;",
+  "vibrate": "&lt;Array of Integers&gt;",
+  "sound": "&lt;URL String&gt;",
+  "dir": "&lt;String of 'auto' | 'ltr' | 'rtl'&gt;",
+
+  "//": "Behavioural Options",
+  "tag": "&lt;String&gt;",
+  "data": "&lt;Anything&gt;",
+  "requireInteraction": "&lt;boolean&gt;",
+  "renotify": "&lt;Boolean&gt;",
+  "silent": "&lt;Boolean&gt;",
+
+  "//": "Both Visual & Behavioural Options",
+  "actions": "&lt;Array of Strings&gt;",
+
+  "//": "Information Option. No visual affect.",
+  "timestamp": "&lt;Long&gt;"
+}
+</code></pre>
+                <p><strong>TODO: INSERT MORE EXPLANATIONS HERE</strong></p>
+
+                <p>Let's add additional options like <code>tag</code>, <code>renotify</code> and actions</p>
+
+                <pre>
+<code>
+const displayConfirmNotification = () => {
+    if ('serviceWorker' in navigator) {
+        const options = {
+            body: 'You successfully subscribed to our Notification service!',
+            icon: 'src/images/icons/app-icon-96x96.png',
+            image: 'src/images/main-image-sm.jpg',
+            dir: 'ltr',
+            lang: 'en-US', // BCP 47,
+            vibrate: [100, 50, 200],
+            badge: 'src/images/icons/app-icon-96x96.png',
+            tag: 'confirm-notification',
+            renotify: true,
+            actions: [
+                {
+                    action: 'confirm',
+                    title: 'Okay',
+                    icon: 'src/images/icons/app-icon-96x96.png'
+                },
+                {
+                    action: 'cancel',
+                    title: 'Cancel',
+                    icon: 'src/images/icons/app-icon-96x96.png'
+                }
+            ]
+        };
+
+        navigator.serviceWorker.ready
+            .then(sw => sw.showNotification('Successfully subscribed (from SW)!', options));
+    }
+};
+</code></pre>
+                <p>where</p>
+
+                <ul>
+                    <li><code>tag</code> is the <strong>ID</strong> of the notification</li>
+                    <li>
+                        <code>renotify</code> specifies whether the user should be notified after a new notification
+                        replaces an old one.
+                    </li>
+                </ul>
+
+                <p>and the result</p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/web-push/notification-actions.png">
+                </p>
+            </google-codelab-step>
+            <google-codelab-step label="Interacting with notifications" duration="2">
+                <p>
+                    So far we've looked at the options that alter the visual appearance of a notification. There are
+                    also options that alter the behaviour of notifications.
+                </p>
+
+                <p>
+                    By default, calling <code>showNotification()</code> with just visual options will have the following
+                    behaviours:
+                </p>
+
+                <ul>
+                    <li>Clicking on the notification does nothing.</li>
+                    <li>
+                        Each new notification is shown one after the other. The browser will not collapse the
+                        notifications in any way.
+                    </li>
+                    <li>
+                        The platform may play a sound or vibrate the user's devices (depending on the platform).
+                    </li>
+                    <li>
+                        On some platforms the notification will disappear after a short period of time while others will
+                        show the notification unless the user interacts with it. (For example, compare your
+                        notifications on Android and Desktop.)
+                    </li>
+                </ul>
+
+                <p>
+                    In this step we are going to look at how we can alter these default behaviours using options
+                    alone. These are relatively easy to implement and take advantage of.
+                </p>
+
+                <h3>Notification Click Event</h3>
+
+                <p>
+                    When a user clicks on a notification the default behaviour is for nothing to happen. It doesn't even
+                    close or remove the notification.
+                </p>
+
+                <p>
+                    The common practice for a notification click is for it to close and perform some other logic (i.e.
+                    open a window or make some API call to the application).
+                </p>
+
+                <p>
+                    To achieve this we need to add a <code>notificationclick</code> event listener to our service worker. This will
+                    be called when ever a notification is clicked.
+                </p>
+
+                <p>In <code>sw-template.js</code></p>
+
+                <pre>
+<code>
+self.addEventListener('notificationclick', event => {
+    const notification = event.notification;
+    const action = event.action;
+
+    console.log(notification);
+
+    if (action === 'confirm') {
+        console.log('Confirm was chosen');
+        notification.close();
+    } else {
+        console.log(action);
+        notification.close();
+    }
+});
+
+self.addEventListener('notificationclose', event => console.log('Notification was closed', event));
+</code></pre>
+            </google-codelab-step>
+            <google-codelab-step label="Subscribing to notifications" duration="10">
+            </google-codelab-step>
+            <google-codelab-step label="Receiving notifications" duration="10">
+            </google-codelab-step>
+            <google-codelab-step label="Unsubscribe from notifications" duration="5">
+            </google-codelab-step>
+            <google-codelab-step label="Summary" duration="1">
+                <h3>Source code</h3>
+
+                <pre><code>$ git checkout pwa-web-push-final</code></pre>
+            </google-codelab-step>
+        </google-codelab>
+    </template>
+    <script>
+        Polymer({
+            is: 'codelab-web-push',
+
+            _twoWayBinding: function (value) {
+                return '{{' + value + '}}';
+            },
+
+            _oneWayBinding: function (value) {
+                return '[[' + value + ']]';
+            }
+        });
+    </script>
+</dom-module>
