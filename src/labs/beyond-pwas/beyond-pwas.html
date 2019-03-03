@@ -1,1 +1,177 @@
-<html><head></head><body><dom-module id="codelab-beyond-pwas"><template><google-codelab title="Beyond PWAs" feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues" environment="web" last-updated="2019-01-29"><google-codelab-step label="Introduction" duration="2"><h2><strong>What You'll Learn</strong></h2><ul class="checklist"><li>Hardware access</li><li>Web Streams API</li><li>Web Bluetooth</li><li>Web Share API</li><li>Payment Request API</li><li>Shape Detection API</li></ul></google-codelab-step><google-codelab-step label="Summary" duration="1"></google-codelab-step></google-codelab></template><script>Polymer({is:"codelab-beyond-pwas",_twoWayBinding:function _twoWayBinding(value){return"{{"+value+"}}"},_oneWayBinding:function _oneWayBinding(value){return"[["+value+"]]"}});</script></dom-module></body></html>
+<html><head></head><body><dom-module id="codelab-beyond-pwas"><template><google-codelab title="Beyond PWAs" feedback-link="https://github.com/The-Guide/fe-guild-2019-pwa-code-labs/issues" environment="web" last-updated="2019-01-29"><google-codelab-step label="Introduction" duration="1"><p>Modern browsers are capable of some amazing things: access to hardware features such as the user’s geolocation, device vibration, and even battery status are already available via easy-to-access APIs. It doesn't end there, either. More APIs are currently being developed that will give web developers even greater access to device hardware. Modern browser vendors are working on ways to use the hardware features of a device to allow developers even greater access to hardware capabilities. Near Field Communication (NFC), ambient light sensors, proximity sensors, accelerometers, and even shape detection are being targeted by some of the amazing APIs currently being developed.</p><p>If you're looking to build a powerful PWA that takes advantage of the hardware on a device, things are only going to get better. Native apps have had access to these features for many years, so it's great to see this kind of thing coming to the web.</p><h2><strong>What You'll Learn</strong></h2><ul class="checklist"><li>Camera &amp; Microphone</li><li>Geolocation</li><li>Web Streams API</li><li>Web Bluetooth API</li><li>Web Share API</li><li>Payment Request API</li><li>Shape Detection API</li></ul></google-codelab-step><google-codelab-step label="Getting set up" duration="3"><h2>Project Set Up</h2><p>In this code lab we are building on top of the project started in the <code>Web Push Notifications</code> code lab.</p><p>If you didn't do it already: <strong>Fork</strong> and then <strong>Clone</strong> the following repository: <code>https://github.com/The-Guide/fe-guild-2019-pwa.git</code></p><pre><code>
+$ git clone https://github.com/[YOUR GITHUB PROFILE]/fe-guild-2019-pwa.git
+$ cd fe-guild-2019-pwa
+</code></pre><p>If you want to start directly with <code>Beyond PWAs</code> checkout the following branch:</p><pre><code>$ git checkout pwa-beyound-init</code></pre><p>To start the project type the following in the terminal and open Chrome at <code>localhost:8080/fe-guild-2019-pwa/</code></p><pre><code>$ npm start</code></pre><p>In this code lab we are also using the server so in case you didn't do it already <strong>fork</strong> and then <strong>clone</strong> the following repository: <code>https://github.com/The-Guide/fe-guild-2019-pwa-server.git</code></p><pre><code>
+$ git clone https://github.com/[YOUR GITHUB PROFILE]/fe-guild-2019-pwa-server.git
+$ cd fe-guild-2019-pwa-server
+</code></pre><p>Install dependencies</p><pre><code>$ npm install</code></pre><p>To start the project type in the terminal:</p><pre><code>$ npm run dev</code></pre><p>the server will be hosted at <code>localhost:3000</code></p></google-codelab-step><google-codelab-step label="Camera &amp; Microphone" duration="15"><p>The <strong>Media Capture API</strong> allows authorized Web applications to access the streams from the device's audio and video capturing interfaces, i.e. to use the data available from the camera and the microphone. The streams exposed by the API can be bound directly to the HTML <code>&lt;audio&gt;</code> or <code>&lt;video&gt;</code> elements or read and manipulated in the code, including further more specific processing via <strong>Image Capture API</strong>, <strong>Media Recorder API</strong> or <strong>Real-Time Communication</strong>.</p><p>There is also a higher level alternative built-in into mobile operating systems like iOS and Android that doesn't require any JavaScript API - the basic HTML <code>&lt;input type="file" accept="image/*"&gt;</code> element allows launching any application that provides an image file, including camera.</p><h2>API glimpse</h2><ul><li><pre><code>navigator.mediaDevices.getUserMedia(constraints)</code></pre><p>Prompts user for an access to the media interface specified by the <code>constraints</code> and returns a <code>Promise</code> that is resolved with the interface's stream handler.</p></li><li><pre><code>stream.getAudioTracks()</code></pre><p>Returns a collection of audio tracks objects being provided by the device's microphone.</p></li><li><pre><code>stream.getVideoTracks()</code></pre><p>Returns a collection of video tracks objects being provided by the device's camera.</p></li><li><pre><code>mediaElement.srcObject = stream</code></pre><p>Sets a stream to be rendered into the provided <code>&lt;audio&gt;</code> or <code>&lt;video&gt;</code> DOM element.</p></li></ul><p>Previous version of the standard, supported with vendor prefixes, contained the callback-based <code>getUserMedia</code> method directly within the <code>navigator</code> element:</p><pre><code>navigator.webkitGetUserMedia(constraints, successCallback, errorCallback)</code></pre><h2>Adapting the Progressive Selfies app</h2><p>The <code>Media Capture API</code> is what we need to capture selfies instead of uploading a picture</p><h3>In <code>index.html</code></h3><p>Just above the <code>div#pick-image</code></p><pre><code>
+&lt;video id="player" autoplay&gt;&lt;/video&gt;
+&lt;canvas id="canvas" width="320px" height="240px"&gt;&lt;/canvas&gt;
+&lt;button
+    id="capture-btn"
+    class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"&gt;
+    Capture
+&lt;/button&gt;
+</code></pre><h3>In <code>feed.css</code></h3><p>Just after <code>#create-post</code></p><pre><code>
+#create-post video, #create-post canvas {
+    width: 512px;
+    max-width: 100%;
+    display: none;
+    margin: auto;
+}
+
+#create-post #pick-image, #create-post #location-loader {
+    display: none;
+}
+
+#create-post #capture-btn {
+    margin: 10px auto;
+}
+</code></pre><h3>In <code>feed.js</code></h3><p>Just after the declaration of <code>imagePicker</code></p><pre><code>
+const imagePickerArea = document.querySelector('#pick-image');
+const videoPlayer = document.querySelector('#player');
+const canvasElement = document.querySelector('#canvas');
+const captureButton = document.querySelector('#capture-btn');
+</code></pre><p>Just after the last variable declaration</p><pre><code>
+const initializeMedia = () =&gt; {
+    if (!('mediaDevices' in navigator)) {
+        navigator.mediaDevices = {};
+    }
+
+    if (!('getUserMedia' in navigator.mediaDevices)) {
+        navigator.mediaDevices.getUserMedia = (constraints) =&gt; {
+            const getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+            if (!getUserMedia) {
+                return Promise.reject(new Error('getUserMedia is not implemented!'));
+            }
+
+            return new Promise((resolve, reject) =&gt; getUserMedia.call(navigator, constraints, resolve, reject));
+        };
+    }
+
+    navigator.mediaDevices.getUserMedia({video: { facingMode: 'user'}, audio: false})
+        .then(stream =&gt; {
+            videoPlayer.srcObject = stream;
+            videoPlayer.style.display = 'block';
+            videoPlayer.setAttribute('autoplay', '');
+            videoPlayer.setAttribute('muted', '');
+            videoPlayer.setAttribute('playsinline', '');
+        })
+        .catch(error =&gt; {
+            console.log(error);
+            imagePickerArea.style.display = 'block';
+        });
+};
+</code></pre><p>Adapt <code>openCreatePostModal</code> by replacing the first line with</p><pre><code>
+setTimeout(() =&gt; createPostArea.style.transform = 'translateY(0)', 1);
+initializeMedia();
+</code></pre><p>Replace <code>closeCreatePostModal</code> with</p><pre><code>
+const closeCreatePostModal = () =&gt; {
+    imagePickerArea.style.display = 'none';
+    videoPlayer.style.display = 'none';
+    canvasElement.style.display = 'none';
+    captureButton.style.display = 'inline';
+    if (videoPlayer.srcObject) {
+        videoPlayer.srcObject.getVideoTracks().forEach(track =&gt; track.stop());
+    }
+    setTimeout(() =&gt; createPostArea.style.transform = 'translateY(100vh)', 1);
+};
+</code></pre><p>Add a <code>click</code> event handler for <code>captureButton</code></p><pre><code>
+captureButton.addEventListener('click', event =&gt; {
+    canvasElement.style.display = 'block';
+    videoPlayer.style.display = 'none';
+    captureButton.style.display = 'none';
+    const context = canvasElement.getContext('2d');
+    context.drawImage(
+        videoPlayer, 0, 0, canvasElement.width, videoPlayer.videoHeight / (videoPlayer.videoWidth / canvasElement.width)
+    );
+    videoPlayer.srcObject.getVideoTracks().forEach(track =&gt; track.stop());
+    picture = dataURItoBlob(canvasElement.toDataURL());
+});
+</code></pre><h3>In <code>utility.js</code></h3><pre><code>
+const dataURItoBlob= dataURI =&gt; {
+    const byteString = atob(dataURI.split(',')[1]);
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i &lt; byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    const blob = new Blob([ab], {type: mimeString});
+    return blob;
+};
+</code></pre><h3>Testing</h3><p>Don't forget to run <code>npm run build</code> before <code>npm start</code> in order for the service worker to take into account the latest changes to the files</p><p>Testing on mobile requires <code>https</code> so you need to deploy it to <strong>GitHub Pages</strong> (have a look at the <em>Introduction to Service Workers</em> step 4 <em>Add to Home Screen</em> if you don't have it set up) so run <code>npm run deploy</code></p><h2>Resources</h2><ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices">Media Devices</a></li><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ImageCapture">Image Capture</a></li><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API">MediaStream Recording API</a></li><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API">WebRTC API</a></li></ul></google-codelab-step><google-codelab-step label="Geolocation" duration="15"><p>The <strong>Geolocation API</strong> lets authorized Web applications to access the location data provided by the device - obtained using either GPS or from the network environment. Apart from the one-off location query, it gives a way for the app to be notified about the location changes.</p><h2>API glimpse</h2><ul><li><pre><code>navigator.geolocation.getCurrentPosition(callback)</code></pre><p>Runs one-off query for location with coordinates, accuracy, altitude &amp; speed, if available.</p></li><li><pre><code>navigator.geolocation.watchPosition(callback)</code></pre><p>Sets up observing for location changes, invoking callback for every change.</p></li></ul><h2>Adapting the Progressive Selfies app</h2><p>Let's use the <strong>Geolocation API</strong> to get our position when we take selfies</p><h3>In <code>index.html</code></h3><p>Just below the <code>div#manual-location</code></p><pre><code>
+&lt;div class="input-section"&gt;
+    &lt;button
+        id="location-btn"
+        type="button"
+        class="mdl-button mdl-js-button mdl-button mdl-button--colored"&gt;
+        Get Location
+    &lt;/button&gt;
+    &lt;div
+        id="location-loader"
+        class="mdl-spinner mdl-js-spinner is-active"&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre><h3>In <code>feed.css</code></h3><pre><code>
+.mdl-spinner {
+  margin: auto;
+}
+</code></pre><h3>In <code>feed.js</code></h3><p>After the last variable declaration</p><pre><code>
+const locationButton = document.querySelector('#location-btn');
+const locationLoader = document.querySelector('#location-loader');
+let fetchedLocation = {lat: 0, lng: 0};
+</code></pre><p>Just before <code>initializeMedia</code></p><pre><code>
+const initializeLocation = () =&gt; {
+    if (!('geolocation' in navigator)) {
+        locationButton.style.display = 'none';
+    }
+};
+</code></pre><p>Adapt <strong>openCreatePostModal</strong> by adding the call to <code>initializeLocation();</code> after the call to <code>initializeMedia();</code></p><p>Adapt <strong>closeCreatePostModal</strong> by adding the following before the <code>if</code> block</p><pre><code>
+locationButton.style.display = 'inline';
+locationLoader.style.display = 'none';
+</code></pre><p>Add a <code>click</code> event handler for <code>locationButton</code></p><pre><code>
+   locationButton.addEventListener('click', event =&gt; {
+    if (!('geolocation' in navigator)) {
+        return;
+    }
+    let sawAlert = false;
+
+    locationButton.style.display = 'none';
+    locationLoader.style.display = 'block';
+
+    navigator.geolocation.getCurrentPosition(position =&gt; {
+        locationButton.style.display = 'inline';
+        locationLoader.style.display = 'none';
+        fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
+
+        const reverseGeocodeService = 'https://nominatim.openstreetmap.org/reverse';
+        fetch(`${reverseGeocodeService}?format=jsonv2&amp;lat=${fetchedLocation.lat}&amp;lon=${fetchedLocation.lng}`)
+            .then(response =&gt; response.json())
+            .then(data =&gt; {
+                locationInput.value = `${data.address.country}, ${data.address.state}`;
+                document.querySelector('#manual-location').classList.add('is-focused');
+            })
+            .catch(error =&gt; {
+                console.log(error);
+                locationButton.style.display = 'inline';
+                locationLoader.style.display = 'none';
+                if (!sawAlert) {
+                    alert('Couldn\'t fetch location, please enter manually!');
+                    sawAlert = true;
+                }
+                fetchedLocation = {lat: 0, lng: 0};
+            });
+    }, error =&gt; {
+        console.log(error);
+        locationButton.style.display = 'inline';
+        locationLoader.style.display = 'none';
+        if (!sawAlert) {
+            alert('Couldn\'t fetch location, please enter manually!');
+            sawAlert = true;
+        }
+        fetchedLocation = {lat: 0, lng: 0};
+    }, {timeout: 7000});
+});
+</code></pre><h3>Testing</h3><p>Don't forget to run <code>npm run build</code> before <code>npm start</code> in order for the service worker to take into account the latest changes to the files</p><p>Testing on mobile requires <code>https</code> so you need to deploy it to <strong>GitHub Pages</strong> (have a look at the <em>Introduction to Service Workers</em> step 4 <em>Add to Home Screen</em> if you don't have it set up) so run <code>npm run deploy</code></p><h2>Resources</h2><ol><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API">Geolocation API</a></li></ol></google-codelab-step><google-codelab-step label="Web Streams API" duration="1"><p>The Web Streams API lets you stream content to your users. For example, say you want to display an image on a web page. Without streaming, the following steps need to take place in the browser:</p><ol><li>Fetch the image data from the network.</li><li>Process the data and uncompress it into raw pixel data.</li><li>Render the results to the page.</li></ol><p>All these steps are critical to displaying an image, but why should you wait for the entire image to be downloaded before you can start these steps? What if you could process the data piece by piece as it was downloaded instead of waiting for the entire image to download? Without streaming, you need to wait for the entire contents of the download to complete before you can return a response. But using streaming you can return the results of the download and process it piece by piece, allowing you to render something onto the screen even sooner. The great thing about this is that you can process the result in parallel with fetching—much better.</p><h2>Resources</h2><ol><li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Streams_API">Streams API</a></li><li><a href="https://jakearchibald.com/2016/streams-ftw/">Web Streams article</a></li></ol></google-codelab-step><google-codelab-step label="Web Bluetooth API" duration="1"></google-codelab-step><google-codelab-step label="Web Share API" duration="1"></google-codelab-step><google-codelab-step label="Payment Request API" duration="1"></google-codelab-step><google-codelab-step label="Shape Detection API" duration="1"></google-codelab-step><google-codelab-step label="Summary" duration="1"></google-codelab-step></google-codelab></template><script>Polymer({is:"codelab-beyond-pwas",_twoWayBinding:function _twoWayBinding(value){return"{{"+value+"}}"},_oneWayBinding:function _oneWayBinding(value){return"[["+value+"]]"}});</script></dom-module></body></html>
