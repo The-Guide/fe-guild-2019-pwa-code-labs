@@ -54,7 +54,7 @@
                     <li>VAPID protocol</li>
                     <li>Sending notifications</li>
                     <li>Receiving and interacting with notifications</li>
-                    <li>Unsubscribing</li>
+                    <li>Unsubscribe from notifications</li>
                 </ul>
 
                 <h2>
@@ -72,7 +72,7 @@
 
                 <p>
                     In this code lab we are building on top of the project started in the
-                    <code>IKeeping your data synchronized with BackgroundSync API</code> code lab.
+                    <code>Keeping your data synchronized with BackgroundSync API</code> code lab.
                 </p>
 
                 <p>
@@ -119,7 +119,7 @@ $ cd fe-guild-2019-pwa-server
                     To start the project type in the terminal:
                 </p>
 
-                <pre><code>$ npm start</code></pre>
+                <pre><code>$ npm run dev</code></pre>
 
                 <p>the server will be hosted at <code>localhost:3000</code></p>
             </google-codelab-step>
@@ -187,7 +187,7 @@ if ('Notification' in window) {
 }
 </code></pre>
             </google-codelab-step>
-            <google-codelab-step label="Displaying a Notification" duration="7">
+            <google-codelab-step label="Displaying a Notification" duration="9">
                 <p>
                     Instead of logging to the console let's show a notification to the user when we receive permissions
                 </p>
@@ -332,7 +332,7 @@ const displayConfirmNotification = () => {
                     <img src="[[rootPath]]images/labs/web-push/notification-actions.png">
                 </p>
             </google-codelab-step>
-            <google-codelab-step label="Interacting with notifications" duration="2">
+            <google-codelab-step label="Interacting with notifications" duration="4">
                 <p>
                     So far we've looked at the options that alter the visual appearance of a notification. There are
                     also options that alter the behaviour of notifications.
@@ -377,7 +377,8 @@ const displayConfirmNotification = () => {
                 </p>
 
                 <p>
-                    To achieve this we need to add a <code>notificationclick</code> event listener to our service worker. This will
+                    To achieve this we need to add a <code>notificationclick</code> event listener to our service
+                    worker. This will
                     be called when ever a notification is clicked.
                 </p>
 
@@ -404,12 +405,463 @@ self.addEventListener('notificationclose', event => console.log('Notification wa
 </code></pre>
             </google-codelab-step>
             <google-codelab-step label="Subscribing to notifications" duration="10">
+                <p>
+                    Subscribing a user requires two things. First, getting permission (<strong>DONE</strong>) from the
+                    user to send them push messages. Second, getting a PushSubscription from the browser.
+                </p>
+
+                <p>
+                    A <code>PushSubscription</code> contains all the information we need to send a push message to that
+                    user. You can "kind of" think of this as an ID for that user's device.
+                </p>
+
+                <p>
+                    This is all done in JavaScript with the
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Push_API">Push API</a>.
+                </p>
+
+                <p>
+                    Before subscribing a user you'll need to generate a set of "application server keys", which we'll
+                    cover later on.
+                </p>
+
+                <p>
+                    The application server keys, also known as VAPID keys, are unique to your server. They allow a push
+                    service to know which application server subscribed a user and ensure that it's the same server
+                    triggering the push messages to that user.
+                </p>
+
+                <p>
+                    Once we have our service worker registered and we've got permission, we can subscribe a user by
+                    calling <code>registration.pushManager.subscribe()</code>.
+                </p>
+
+                <p>
+                    Once you've subscribed the user and have a PushSubscription, you'll need to send the
+                    PushSubscription details to your backend / server. On your server, you'll save this subscription to
+                    a database and use it to send a push message to that user.
+                </p>
+
+                <p>In <code>app.js</code> just above <code>askForNotificationPermission</code>:</p>
+
+                <pre>
+<code>
+const configurePushSubscription = () => {
+    if ('serviceWorker' in navigator) {
+        let serviceWorkerRegistration;
+        navigator.serviceWorker.ready
+            .then(registration => {
+                serviceWorkerRegistration = registration;
+                return registration.pushManager.getSubscription();
+            })
+            .then(subscription => {
+                if (subscription === null) {
+                    // Create a new subscription
+                    return serviceWorkerRegistration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array('PUBLIC KEY HERE')
+                    });
+            })
+            .then(pushSubscription => {
+                console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+                return pushSubscription;
+            });
+    }
+};
+</code></pre>
+                <p>In <code>utility.js</code></p>
+
+                <pre>
+<code>
+const urlBase64ToUint8Array = base64String => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+};
+</code></pre>
+
+                <p>
+                    You may notice code we’ve used frequently throughout this code lab. You register the Service Worker
+                    and, if it’s successful, you can then use the registration object
+                </p>
+
+                <p>
+                    We first check if you have a subscription by calling <code>registration.pushManager.getSubscription()</code>
+                    and if it is <code>null</code> we then call <code>subscribe()</code>
+                </p>
+
+                <p>
+                    When calling the <code>subscribe()</code> method, we pass in an <em>options</em> object, which
+                    consists of both required and optional parameters.
+                </p>
+
+                <p>Lets look at all the options we can pass in.</p>
+
+                <h3>userVisibleOnly</h3>
+
+                <p>
+                    At the moment you <strong>must</strong> pass in a value of <code>true</code> in order to prevent the
+                    sending of a push message without showing a notification. This is commonly referred to as silent
+                    push, due to the user not knowing that something had happened in the background.
+                </p>
+
+                <p>
+                    The concern was that developers could do nasty things like track a user's location on an ongoing
+                    basis without the user knowing.
+                </p>
+
+                <h3>applicationServerKey</h3>
+
+                <p>
+                    We briefly mentioned "application server keys" in the previous section. "Application server keys"
+                    are used by a push service to identify the application subscribing a user and ensure that the same
+                    application is messaging that user.
+                </p>
+
+                <p>
+                    Application server keys are a public and private key pair that are unique to your application. The
+                    private key should be kept a secret to your application and the public key can be shared freely.
+                </p>
+
+                <p>
+                    The <code>applicationServerKey</code> option passed into the subscribe() call is the application's
+                    public key. The browser passes this onto a push service when subscribing the user, meaning the push
+                    service can tie your application's public key to the user's <code>PushSubscription</code>.
+                </p>
+
+                <p>
+                    When you later want to send a push message, you'll need to create an <strong>Authorization</strong>
+                    header which will contain information signed with your application server's <strong>private
+                    key</strong>. When the push service receives a request to send a push message, it can validate this
+                    signed <strong>Authorization</strong> header by looking up the public key linked to the endpoint
+                    receiving the request. If the signature is valid the push service knows that it must have come from
+                    the application server with the <strong>matching private key</strong>. It's basically a security
+                    measure that prevents anyone else sending messages to an application's users.
+                </p>
+
+                <p>
+                    The specification that defines what the application server key should be is the
+                    <a href="https://tools.ietf.org/html/draft-thomson-webpush-vapid">VAPID spec</a>. Whenever you read
+                    something referring to "application server keys" or "VAPID keys", just remember that they are the
+                    same thing.
+                </p>
+
+                <h2>How to Create Application Server Keys</h2>
+
+                <p>
+                    You can create a public and private set of application server keys from the <code>fe-guild-2019-pwa-server</code>
+                    root folder by running <code>npm run web-push</code>. This uses the
+                    <a href="https://github.com/web-push-libs/web-push#command-line">web-push command line</a> to
+                    generate keys.
+                </p>
+
+                <p>
+                    After generating the keys make sure you replace the values inside the <code>configurePushSubscription</code>
+                    function in <code>app.js</code>. Also on the server side inside the <code>routes.js</code> file
+                </p>
+
+                <h2>What is a PushSubscription?</h2>
+
+                <p>
+                    The <code>PushSubscription</code> object contains all the required information needed to send a push
+                    messages to that user. If you print out the contents using <code>JSON.stringify()</code>, you'll see
+                    the following:
+                </p>
+
+                <pre>
+<code>
+{
+    'endpoint': 'https://SOME.PUSHSERVICE.COM/SOMETHING-UNIQUE',
+    'expirationTime': null,
+    'keys': {
+        'p256dh': 'BGhFV5qx5cdOaD_XF293OqMdYSUIrMrzj2-RuzGwOTIhdW8vFm_zN2VtwMOq9PRlyjaJ3uWjHVcM6ZWW8uXdKj8',
+        'auth': 'HA1JEiRAp2HLuVH639Oumw'
+    }
+};
+</code></pre>
+                <p>
+                    The <code>endpoint</code> is the push services URL. To trigger a push message, make a POST request
+                    to this URL.
+                </p>
+
+                <p>
+                    The <code>keys</code> object contains the values used to encrypt message data sent with a push
+                    message (which we'll discuss later on in this step).
+                </p>
+
+                <h2>Send a Subscription to the Server</h2>
+
+                <p>
+                    Once you have a push subscription you'll want to send it to your server. It's up to you how you do
+                    that but a tiny tip is to use JSON.stringify() to get all the necessary data out of the subscription
+                    object.
+                </p>
+
+                <p>Adapt the <code>configurePushSubscription</code> function</p>
+
+                <pre>
+<code>
+const configurePushSubscription = () => {
+    if ('serviceWorker' in navigator) {
+        let serviceWorkerRegistration;
+        navigator.serviceWorker.ready
+            .then(registration => {
+                serviceWorkerRegistration = registration;
+                return registration.pushManager.getSubscription();
+            })
+            .then(subscription => {
+                if (subscription === null) {
+                    // Create a new subscription
+                    return serviceWorkerRegistration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array('PUBLIC KEY HERE')
+                    });
+                }
+            })
+            .then(pushSubscription => {
+                return fetch(`${SERVER_URL}/subscriptions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(pushSubscription)
+                });
+            })
+            .then(response => {
+                if (response.ok) {
+                    displayConfirmNotification();
+                }
+            })
+            .catch(error => console.log(error));
+    }
+};
+</code></pre>
+                <p>
+                    With the <code>PushSubscription</code> details on our server we are good to send our user a message
+                    whenever we want. In the <code>fe-guild-2019-pwa-server\routes\routes.js</code> the code is already
+                    there waiting for us to receive the notifications.
+                </p>
             </google-codelab-step>
             <google-codelab-step label="Receiving notifications" duration="10">
+                <p>
+                    Now that we've stored the user's unique subscription details, we can start sending push messages to
+                    them and provide them with timely updates on important notifications.
+                </p>
+
+                <p>
+                    On the front-end code, we need to add some code to our Service Worker. The code in the next listing
+                    shows how to listen for the push event and display a push notification accordingly.
+                </p>
+
+                <p>In <code>sw-template.js</code></p>
+
+                <pre>
+<code>
+self.addEventListener('push', event => {
+    console.log('Push Notification received', event);
+
+    let data = {title: 'New!', content: 'Something new happened!', openUrl: '/'};
+
+    if (event.data) {
+        data = JSON.parse(event.data.text());
+    }
+
+    const options = {
+        body: data.content,
+        image: data.imageUrl,
+        icon: 'src/images/icons/app-icon-96x96.png',
+        badge: 'src/images/icons/app-icon-96x96.png',
+        data: {
+            url: data.openUrl
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
+</code></pre>
+                <p>
+                    The code in the listing above listens to the push event and reads the payload of the data sent from
+                    the server. With this payload data, you can then display a notification using the <code>showNotification</code>
+                    function.
+                </p>
+
+                <p>And it looks like this</p>
+
+                <p style="display:flex; justify-content: center; align-items: center;">
+                    <img src="[[rootPath]]images/labs/web-push/notification-push.png">
+                </p>
+
+                <p>
+                    Hooray! We've sent our first web push notification. You should now notice this appear in the
+                    browser.
+                    But there's one more step. For the user to interact with the push notification, we need to handle
+                    the click event of the notification. We already do that in the <code>notificationclick</code> but
+                    the event handler needs a little update
+                </p>
+
+                <p>In <code>sw-template.js</code> replace the <code>notificationclick</code> event handler</p>
+
+                <pre>
+<code>
+self.addEventListener('notificationclick', event => {
+    const notification = event.notification;
+    const action = event.action;
+
+    console.log(notification);
+
+    if (action === 'confirm') {
+        console.log('Confirm was chosen');
+        notification.close();
+    } else {
+        event.waitUntil(
+            self.clients.matchAll()
+                .then(clients => {
+                    let visibleClient = clients.find(client => client.visibilityState === 'visible');
+
+                    if (visibleClient && 'navigate' in visibleClient) {
+                        visibleClient.navigate(notification.data.url);
+                        visibleClient.focus();
+                    } else {
+                        self.clients.openWindow(`fe-guild-2019-pwa/${notification.data.url}`);
+                    }
+                    notification.close();
+                })
+        );
+        console.log(action);
+        notification.close();
+    }
+});
+</code></pre>
+
             </google-codelab-step>
-            <google-codelab-step label="Unsubscribe from notifications" duration="5">
+            <google-codelab-step label="Unsubscribe from notifications" duration="15">
+                <p>
+                    Users can unsubscribe themselves by changing a few settings in their browser, but there may come a
+                    time when you want to programmatically unsubscribe a user. For example, you could add a simple
+                    button to your web page that would allow users to unsubscribe at the tap of a button instead of
+                    digging around in their browser settings. The code in the following listing shows this in action.
+                </p>
+
+                <pre>
+<code>
+const unsubscribe = () => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready
+            .then(serviceWorkerRegistration => {
+                return serviceWorkerRegistration.pushManager.getSubscription();
+            })
+            .then(subscription => {
+                if (!subscription) {
+                    console.log("Not subscribed, nothing to do.");
+                    return;
+                }
+                return subscription.unsubscribe();
+            })
+            .then(() => console.log("Successfully unsubscribed!.")
+            .catch(error => console.error('Error thrown while trying to unsubscribe from push messaging', error));
+    }
+};
+</code></pre>
+                <p>
+                    The code in the listing above is a basic example that shows how you can unsubscribe a user. The
+                    listing contains code that will first check to see if the user is already subscribed using the
+                    <code>pushManager.getSubscription()</code> function. If the user is subscribed, you then unsubscribe
+                    them using the <code>subscription.unsubscribe()</code> function.
+                </p>
+
+                <h2>Exercises</h2>
+
+                <ol>
+                    <li>Implement the <code>unsubscribe</code> functionality.</li>
+                    <li>Delete the subscription from the server as well.</li>
+                </ol>
+
+            </google-codelab-step>
+            <google-codelab-step label="Third-party push notifications" duration="1">
+                <p>
+                    As you can imagine, the business of sending push notifications to the many different browsers out
+                    there can be tricky. If you’d prefer not to build your own push notification server and instead use
+                    a SaaS product, there are many third-party solutions out there.
+                </p>
+
+                <p>
+                    Services such as OneSignal, Roost, and Aimtell all offer a solution that can target multiple browsers
+                    and provide you with enhanced functionality. Many of these services have created libraries to deal
+                    with all the major browsers, which means you’ll get full coverage and engagement regardless of
+                    browser. These services also have a lot of functionality built into them that allows you to schedule
+                    messages for a later date, and some have complex reporting charts that give insight into how your
+                    users are interacting with your notifications.
+                </p>
             </google-codelab-step>
             <google-codelab-step label="Summary" duration="1">
+                <p>
+                    Push notifications are a great way to engage with your users even after they navigate away from your
+                    site and close their browser window.
+                </p>
+
+                <p>
+                    In order to send push messages to a user, they first need to opt in. This provides the developer with
+                    unique subscription details based on the user’s device and browser.
+                </p>
+
+                <p>
+                    Once the user has opted in, it is important to save their subscription details in order to send
+                    messages to them.
+                </p>
+
+                <p>
+                    VAPID is a specification that defines a handshake between your app server and the push service and
+                    allows the push service to confirm which site is sending messages.
+                </p>
+
+                <p>
+                    Push notifications can be enhanced by using notification actions and even device vibration.
+                </p>
+
+                <p>
+                    If you’d like to reach a wide range of browsers, some third-party services can deal with this.
+                </p>
+
+                <h2>
+                    <strong>What we've learned</strong>
+                </h2>
+
+                <p>
+                    Here is a checklist which breaks down the things we learned in this code lab.
+                </p>
+
+                <ul class="checklist">
+                    <li>Subscribing to notifications</li>
+                    <li>VAPID protocol</li>
+                    <li>Sending notifications</li>
+                    <li>Receiving and interacting with notifications</li>
+                    <li>Unsubscribe from notifications</li>
+                </ul>
+
+                <h2>Resources</h2>
+
+                <li>
+                    <a href="https://developers.google.com/web/fundamentals/push-notifications/">Web Push Notifications</a>
+                </li>
+                <li>
+                    <a href="https://github.com/web-push-libs/web-push">web-push package</a>
+                </li>
+                <li>
+                    <a href="https://tools.ietf.org/html/draft-thomson-webpush-vapid-02">VAPID spec</a>
+                </li>
+
                 <h3>Source code</h3>
 
                 <pre><code>$ git checkout pwa-web-push-final</code></pre>

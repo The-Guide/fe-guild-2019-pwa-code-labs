@@ -2,7 +2,7 @@
     {
         "category": "About",
         "slug": "about",
-        "title": "About Progressive Web Applications (Start Here)",
+        "title": "0 - About Progressive Web Applications (Start Here)",
         "updated": "2019-01-29T13:20:00Z",
         "author": "Radu Enuca",
         "duration": 0,
@@ -11,7 +11,7 @@
     {
         "category": "JavaScript",
         "slug": "promises",
-        "title": "Promise API Basics",
+        "title": "0.1 - Promise API Basics",
         "updated": "2019-01-24T19:00:00Z",
         "author": "Radu Enuca",
         "duration": 30
@@ -19,7 +19,7 @@
     {
         "category": "JavaScript",
         "slug": "fetch-api",
-        "title": "Fetch API Basics",
+        "title": "0.2 - Fetch API Basics",
         "updated": "2019-01-24T21:24:00Z",
         "author": "Radu Enuca",
         "duration": 30
@@ -27,7 +27,7 @@
     {
         "category": "JavaScript",
         "slug": "indexed-db",
-        "title": "IndexedDB Basics",
+        "title": "0.3 - IndexedDB Basics",
         "updated": "2019-01-22T08:44:00Z",
         "author": "Radu Enuca",
         "duration": 30
@@ -35,7 +35,7 @@
     {
         "category": "HTML",
         "slug": "app-manifest",
-        "title": "Understanding the App Manifest",
+        "title": "1 - Understanding the App Manifest",
         "updated": "2019-01-29T11:50:00Z",
         "author": "Radu Enuca",
         "duration": 40
@@ -43,7 +43,7 @@
     {
         "category": "JavaScript",
         "slug": "service-workers",
-        "title": "Introduction to Service Workers",
+        "title": "2 - Introduction to Service Workers",
         "updated": "2019-01-27T21:00:00Z",
         "author": "Radu Enuca",
         "duration": 70
@@ -51,7 +51,7 @@
     {
         "category": "JavaScript",
         "slug": "workbox",
-        "title": "Service Worker Management with WorkBox",
+        "title": "3 - Service Worker Management with WorkBox",
         "updated": "2019-01-27T08:45:00Z",
         "author": "Radu Enuca",
         "duration": 30
@@ -59,7 +59,7 @@
     {
         "category": "JavaScript",
         "slug": "service-workers-advanced",
-        "title": "Keeping your data synchronized with BackgroundSync API",
+        "title": "4 - Keeping your data synchronized with BackgroundSync API",
         "updated": "2019-01-29T12:32:00Z",
         "author": "Radu Enuca",
         "duration": 50
@@ -67,15 +67,15 @@
     {
         "category": "JavaScript",
         "slug": "web-push",
-        "title": "Web Push Notifications (In progress)",
-        "updated": "2019-01-29T12:32:00Z",
+        "title": "5 - Web Push Notifications",
+        "updated": "2019-03-02T16:08:00Z",
         "author": "Radu Enuca",
-        "duration": 45
+        "duration": 60
     },
     {
         "category": "JavaScript",
         "slug": "beyond-pwas",
-        "title": "Beyond PWAs (In progress)",
+        "title": "6 - Beyond PWAs (In progress)",
         "updated": "2019-01-29T12:32:00Z",
         "author": "Radu Enuca",
         "duration": 45
