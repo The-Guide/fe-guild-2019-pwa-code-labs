@@ -13,7 +13,7 @@
             <google-codelab-step label="Introduction" duration="1">
                 <p>
                     Modern browsers are capable of some amazing things: access to hardware features such as the user’s
-                    geolocation, device vibration, and even battery status are already available via easy-to-access
+                    geolocation, device vibration, and even battery status is already available via easy-to-access
                     APIs.
                     It doesn't end there, either. More APIs are currently being developed that will give web developers
                     even greater access to device hardware. Modern browser vendors are working on ways to use the
@@ -46,7 +46,7 @@
                 <h2>Project Set Up</h2>
 
                 <p>
-                    In this code lab we are building on top of the project started in the
+                    In this code lab, we are building on top of the project started in the
                     <code>Web Push Notifications</code> code lab.
                 </p>
 
@@ -76,7 +76,7 @@ $ cd fe-guild-2019-pwa
                 <pre><code>$ npm start</code></pre>
 
                 <p>
-                    In this code lab we are also using the server so in case you didn't do it already
+                    In this code lab, we are also using the server so in case you didn't do it already
                     <strong>fork</strong> and then <strong>clone</strong> the following
                     repository: <code>https://github.com/The-Guide/fe-guild-2019-pwa-server.git</code>
                 </p>
@@ -94,7 +94,7 @@ $ cd fe-guild-2019-pwa-server
                     To start the project type in the terminal:
                 </p>
 
-                <pre><code>$ npm run dev</code></pre>
+                <pre><code>$ npm start</code></pre>
 
                 <p>the server will be hosted at <code>localhost:3000</code></p>
             </google-codelab-step>
@@ -112,7 +112,7 @@ $ cd fe-guild-2019-pwa-server
                     There is also a higher level alternative built-in into mobile operating systems like iOS and Android
                     that doesn't require any JavaScript API - the basic HTML <code>&lt;input type="file"
                     accept="image/*"&gt;</code> element allows launching any application that provides an image
-                    file, including camera.
+                    file, including the camera.
                 </p>
 
                 <h2>API glimpse</h2>
@@ -121,9 +121,8 @@ $ cd fe-guild-2019-pwa-server
                     <li>
                         <pre><code>navigator.mediaDevices.getUserMedia(constraints)</code></pre>
                         <p>
-                            Prompts user for an access to the media interface specified by the <code>constraints</code>
-                            and
-                            returns a <code>Promise</code> that is resolved with the interface's stream handler.
+                            Prompts the user for access to the media interface specified by the <code>constraints</code>
+                            and returns a <code>Promise</code> that is resolved with the interface's stream handler.
                         </p>
                     </li>
                     <li>
@@ -340,7 +339,8 @@ const dataURItoBlob= dataURI => {
                 <p>
                     The <strong>Geolocation API</strong> lets authorized Web applications to access the location data
                     provided by the device - obtained using either GPS or from the network environment. Apart from the
-                    one-off location query, it gives a way for the app to be notified about the location changes.
+                    one-off location query, it also provides a way for the app to be notified about the location
+                    changes.
                 </p>
 
                 <h2>API glimpse</h2>
@@ -349,7 +349,7 @@ const dataURItoBlob= dataURI => {
                     <li>
                         <pre><code>navigator.geolocation.getCurrentPosition(callback)</code></pre>
                         <p>
-                            Runs one-off query for location with coordinates, accuracy, altitude & speed, if
+                            Runs one-off query for the location with coordinates, accuracy, altitude & speed, if
                             available.
                         </p>
                     </li>
@@ -486,7 +486,7 @@ locationLoader.style.display = 'none';
                 </p>
 
                 <p>
-                    Testing on mobile requires <code>https</code> so you need to deploy it to <strong>GitHub
+                    Testing on mobile requires <code>https</code>, so you need to deploy it to <strong>GitHub
                     Pages</strong> (have a look at the <em>Introduction to Service Workers</em> step 4 <em>Add to Home
                     Screen</em> if you don't have it set up) so run <code>npm run deploy</code>
                 </p>
@@ -641,12 +641,12 @@ const readBatteryLevel = () => {
             <google-codelab-step label="Web Share API" duration="5">
                 <p>
                     There were several attempts to establish the universal, multi-platform, asynchronous way of data
-                    exchange from the Web applications to native apps or another Web apps and up to date no standardized
+                    exchange from the Web applications to native apps or nother Web apps and up to date no standardized
                     solution was conceived.
                 </p>
 
                 <p>
-                    There are, however, some basic workarounds for sending data to another applications. Native
+                    There are, however, some basic workarounds for sending data to nother applications. Native
                     applications can register handlers to receive data from the Web apps using special URL prefixes
                     (although differences exist between iOS and Android). There are also third-party non-standard
                     services that coordinate sharing data between Web applications.
@@ -741,24 +741,25 @@ const share = () => {
                 </p>
 
                 <p>
-                    With <code>supportedMethods</code> parameter the API allows the Web application to select the
+                    With <code>supportedMethods</code> parameter, the API allows the Web application to select the
                     supported payment methods - for example only to allow credit card payments or payments processed by
                     a specific 3rd-party provider - as well as configure its parameters. Methods are specified by the
                     predefined identifier or by the 3rd-party URL. Note that the behaviors of the payment methods might
                     vary. For example, the <code>basic-card</code> predefined provider does not process any actual
                     payments - its role is reduced to collecting the credit card details and returning it to the
-                    requesting Web application. Although 3rd-party providers might as well proceed with the actual money
+                    requesting Web application although 3rd-party providers might as well proceed with the actual money
                     transfer as a part of the flow.
                 </p>
 
                 <p>
-                    With <code>details</code> parameter the Web application should specify the total amount and currency
+                    With <code>details</code> parameter, the Web application should specify the total amount and
+                    currency
                     of the payment. It also allows setting up the order summary information including the subtotals,
-                    order items and shipping options.
+                    order items, and shipping options.
                 </p>
 
                 <p>
-                    With <code>options</code> parameter the Web application might specify what kind of customer data it
+                    With <code>options</code> parameter, the Web application might specify what kind of customer data it
                     requires to be able to fulfill the request. It may require a shipping address
                     (<code>requestShipping</code>), email (<code>requestPayerEmail</code>), phone (<code>requestPayerPhone</code>)
                     or name (<code>requestPayerName</code>).
@@ -766,7 +767,7 @@ const share = () => {
 
                 <p>
                     The only payment method available on Apple devices is <a href="https://www.apple.com/apple-pay/">Apple
-                    Pay</a> and it is only functional on devices with fingerprint authentication (Touch ID). It is
+                    Pay</a>, and it is only functional on devices with fingerprint authentication (Touch ID). It is
                     accessible via the proprietary non-standard <code>ApplePaySession</code> API instead of the Payment
                     Request API described here. The support for standard Payment Request API in Safari is available from
                     Safari 11.1 on macOS and Safari on iOS 11.3.
@@ -794,8 +795,8 @@ const share = () => {
                         <p>
                             Presents the checkout confirmation UI to the user or redirects to the system-defined
                             application that accepts payments by a method selected. Returns a <code>Promise</code>
-                            resolved with the <code>response</code> object when the payment is successfully confirmed by
-                            the payment provider. Note that it may or may not already denote the money being transferred
+                            resolved with the <code>response</code> object the payment provider successfully confirms
+                            the payment. Note that it may or may not already denote the money being transferred
                             - it depends on the selected payment method implementation.
                         </p>
                     </li>
@@ -833,7 +834,7 @@ const share = () => {
                         <pre><code>response.complete(result)</code></pre>
                         <p>
                             Signals the browser that the app-specific steps of payment processing (like sending the
-                            order data to the server-side) has completed. Returns a <code>Promise</code> resolved when
+                            order data to the server-side) have completed. Returns a <code>Promise</code> resolved when
                             the Payment Request UI is cleared.
                         </p>
                     </li>
@@ -982,6 +983,49 @@ barcodeDetector.detect(image)
                 </ol>
             </google-codelab-step>
             <google-codelab-step label="Summary" duration="1">
+                <p>
+                    The Web Bluetooth API allows websites to communicate over GATT with nearby user-selected Bluetooth
+                    devices in a secure and privacy-preserving way.
+                </p>
+                <p>
+                    The Web Share API allows websites to invoke the native sharing capabilities of the host platform
+                    directly from the web.
+                </p>
+                <p>
+                    The Payment Request API is a system that aims to eliminate checkout forms by vastly improving the
+                    user workflow during the purchase process and providing a more consistent user experience, enabling
+                    web merchants to easily implement payment methods.
+                </p>
+                <p>
+                    Modern browsers are capable of some amazing things: access to hardware features such as the user’s
+                    geolocation, device vibration, and even battery status are already available via easy-to-access
+                    APIs.
+                </p>
+                <p>
+                    You can use the Shape Detection API to detect barcodes, text, and even faces inside images.
+                </p>
+
+                <h2>
+                    <strong>What we've learned</strong>
+                </h2>
+
+                <p>
+                    Here is a checklist which breaks down the things we learned in this code lab.
+                </p>
+
+                <ul class="checklist">
+                    <li>Camera & Microphone</li>
+                    <li>Geolocation</li>
+                    <li>Web Streams API</li>
+                    <li>Web Bluetooth API</li>
+                    <li>Web Share API</li>
+                    <li>Payment Request API</li>
+                    <li>Shape Detection API</li>
+                </ul>
+
+                <h3>Source code</h3>
+
+                <pre><code>$ git checkout pwa-beyond-final</code></pre>
             </google-codelab-step>
         </google-codelab>
     </template>

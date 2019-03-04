@@ -17,7 +17,7 @@
                     helpful. Written by the team at Google, it’s a library of helpers to get you started creating your
                     own Service Workers in no time, with built-in handlers to cover the most common network strategies.
                     In a few lines of code, you can decide whether you want to serve specific resources solely from
-                    cache, serve resources from cache and then fall back, or perhaps only return resources from the
+                    the cache, serve resources from the cache and then fall back, or perhaps only return resources from the
                     network and never cache. This library gives you total control over your caching strategy.
                 </p>
 
@@ -49,7 +49,7 @@
                 <ul>
                     <li>Firefox 61, Chrome 58, Edge 11, Safari 11.1, Opera 44 or above</li>
                     <li>Your favorite text editor</li>
-                    <li>Basic knowledge of HTML, CSS and JavaScript (ES6/2015)</li>
+                    <li>Basic knowledge of HTML, CSS, and JavaScript (ES6/2015)</li>
                     <li>Node.js and NPM</li>
                 </ul>
             </google-codelab-step>
@@ -57,7 +57,7 @@
                 <h2>Project Set Up</h2>
 
                 <p>
-                    In this code lab we are building on top of the project started in the
+                    In this code lab, we are building on top of the project started in the
                     <code>Introduction to Service Workers</code> code lab.
                 </p>
 
@@ -91,7 +91,7 @@ $ cd fe-guild-2019-pwa
 
                 <pre><code>$ npm install workbox-cli --save-dev</code></pre>
 
-                <p>For some Windows version it can hang so install the latest beta instead</p>
+                <p>For some Windows version, it can hang so install the latest beta instead</p>
 
                 <pre><code>$ npm install workbox-cli@beta --save-dev</code></pre>
 
@@ -169,7 +169,7 @@ if (workbox) {
                     <li>
                         <code>workbox-cli</code> automatically adds "revision hashes" to the files in the manifest
                         entries. The revision hashes enable Workbox to intelligently track when files have been modified
-                        or are outdated, and automatically keep caches up to date with the latest file versions. Workbox
+                        or are outdated and automatically keep caches up to date with the latest file versions. Workbox
                         can also remove cached files that are no longer in the manifest, keeping the amount of data
                         stored
                         on a user's device to a minimum. You'll see what <code>workbox-cli</code> and the file revision
@@ -187,7 +187,7 @@ if (workbox) {
             <google-codelab-step label="Configure Workbox" duration="5">
                 <p>
                     The first step towards injecting a precache manifest into the service worker is configuring which
-                    files we want to precache. In this step we create the <code>workbox-cli</code> configuration file.
+                    files we want to precache. In this step, we create the <code>workbox-cli</code> configuration file.
                 </p>
 
                 <p>
@@ -232,8 +232,26 @@ if (workbox) {
                 </p>
 
                 <p>
-                    Let's examine the newly created <strong>workbox-config.js</strong> file
+                    Let's examine the newly created <strong>workbox-config.js</strong> file.
                 </p>
+
+                <pre>
+<code>
+module.exports = {
+  "globDirectory": "fe-guild-2019-pwa/",
+  "globPatterns": [
+      "**/*.{html,ico,json,css,js}",
+      "src/images/*.{jpg,png}"
+  ],
+  "swDest": "fe-guild-2019-pwa/sw.js",
+  "swSrc": "fe-guild-2019-pwa/sw-template.js",
+    "globIgnores": [
+        "../workbox-config.js",
+        "sw-template.js",
+        "help/**"
+    ]
+};
+</code></pre>
 
                 <p>
                     Workbox creates a configuration file (in this case <strong>workbox-config.js</strong>) that
@@ -268,7 +286,7 @@ if (workbox) {
 
                 <p>
                     The <code>precacheAndRoute</code> call in <strong>sw.js</strong> has been updated. In your text
-                    editor, open <strong>sw.js</strong> and observe that all the <strong>css</strong> files are included
+                    editor, open <strong>sw.js</strong> and observe that all the <strong>CSS</strong> files are included
                     in the file manifest.
                 </p>
 
@@ -285,7 +303,7 @@ if (workbox) {
                     Refresh the page and check that a new service worker was installed. You can see your service workers
                     in Chrome DevTools by clicking on <strong>Service Workers</strong> in the
                     <strong>Application</strong>
-                    tab. Check the cache and observe that all <strong>css</strong> files are stored. In Chrome DevTools,
+                    tab. Check the cache and observe that all <strong>CSS</strong> files are stored. In Chrome DevTools,
                     you can see your caches by clicking on Cache Storage in the Application tab.
                 </p>
 
@@ -296,12 +314,12 @@ if (workbox) {
                     worker file (<strong>fe-guild-2019-pwa/sw-template.js</strong>) and injects a manifest into it,
                     creating our production service worker file (<strong>fe-guild-2019-pwa/sw.js</strong>). Because we
                     configured <strong>workbox-config.js</strong> to cache <code>*.css</code> files, our production
-                    service worker has all the css files in the manifest. As a result, all the css files were pre-cached
+                    service worker has all the CSS files in the manifest. As a result, all the CSS files were pre-cached
                     during the service worker installation.
                 </p>
 
                 <p>
-                    Now whenever we update our app, we can simple run <code>npm run build</code> to update the service
+                    Now whenever we update our app, we can simply run <code>npm run build</code> to update the service
                     worker.
                 </p>
             </google-codelab-step>
@@ -342,8 +360,7 @@ module.exports = {
 
                 <p>
                     If you enable <code>Offline mode</code> from the <strong>Network</strong> tab the home page loads
-                    but
-                    not the fonts. We will fix that in a next step.
+                    but not the fonts, we will fix that in the next step.
                 </p>
 
                 <h3>Explanation</h3>
@@ -410,19 +427,19 @@ $ npm run start
                 <p>
                     Refresh the app and activate the updated service worker in the browser. Put the app offline and
                     check
-                    that the <code>Google Fonts</code> load correctly now. You may need to refresh twice
+                    that the <code>Google Fonts</code> load correctly now. You may need to refresh twice.
                 </p>
 
                 <h3>Explanation</h3>
 
                 <p>
-                    In this code we added a route to the service worker using the <a
+                    In this code, we added a route to the service worker using the <a
                     href="https://developers.google.com/web/tools/workbox/reference-docs/prerelease/workbox.routing#.registerRoute">registerRoute</a>
                     method on the <a href="https://developers.google.com/web/tools/workbox/modules/workbox-routing">routing</a>
                     class. The first parameter in <code>registerRoute</code> is a regular expression URL pattern to
                     match requests against. The second parameter is the handler that provides a response if the route
                     matches.
-                    In this case the route uses the <a
+                    In this case, the route uses the <a
                     href="https://developers.google.com/web/tools/workbox/modules/workbox-strategies">strategies</a>
                     class to access the
                     <a href="https://developers.google.com/web/tools/workbox/modules/workbox-strategies#stale-while-revalidate">staleWhileRevalidate</a>
@@ -432,7 +449,7 @@ $ npm run start
 
                 <p>
                     The handler in this code also configures Workbox to maintain a maximum of 3 entries in the cache.
-                    Once 3 entries has been reached, Workbox will remove the oldest one automatically. The fonts are
+                    Once 3 entries have been reached, Workbox will remove the oldest one automatically. The fonts are
                     also set to expire after 30 days, signaling to the service worker that the network should be used
                     for those entries.
                 </p>
@@ -493,7 +510,7 @@ $ npm run start
                         <strong>Introduction to Service Workers</strong> code lab. See if you spot any differences
                     </li>
                     <li>
-                        Write your own routes that caches the icons and splashscreens. The route should match requests
+                        Write your own routes that caches the icons and splash screens. The route should match requests
                         to
                         <code>/images/icons/*</code> and <code>/images/splashscreens/*</code> and handle the
                         request/response using the <code>staleWhileRevalidate</code> strategy. Name the caches and think

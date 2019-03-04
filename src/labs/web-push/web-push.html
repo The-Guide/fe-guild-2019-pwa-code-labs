@@ -39,9 +39,9 @@
 
                 <p>
                     But what about malicious websites using this technology to send spammy push notifications? In order
-                    to send push messages to a user, the user first needs to opt in to your messages.Once a user has
+                    to send push messages to a user, the user first needs to opt-in, to your messages.Once a user has
                     either accepted or blocked the push notification prompt, the prompt won't appear again. It's
-                    important to note that that this prompt will only appear if the site is running over HTTPS, has a
+                    important to note that this prompt will only appear if the site is running over HTTPS, has a
                     registered Service Worker, and you have written code for it.
                 </p>
 
@@ -71,7 +71,7 @@
                 <h2>Project Set Up</h2>
 
                 <p>
-                    In this code lab we are building on top of the project started in the
+                    In this code lab, we are building on top of the project started in the
                     <code>Keeping your data synchronized with BackgroundSync API</code> code lab.
                 </p>
 
@@ -101,7 +101,7 @@ $ cd fe-guild-2019-pwa
                 <pre><code>$ npm start</code></pre>
 
                 <p>
-                    In this code lab we are also using the server so in case you didn't do it already
+                    In this code lab, we are also using the server so in case you didn't do it already
                     <strong>fork</strong> and then <strong>clone</strong> the following
                     repository: <code>https://github.com/The-Guide/fe-guild-2019-pwa-server.git</code>
                 </p>
@@ -119,13 +119,13 @@ $ cd fe-guild-2019-pwa-server
                     To start the project type in the terminal:
                 </p>
 
-                <pre><code>$ npm run dev</code></pre>
+                <pre><code>$ npm start</code></pre>
 
                 <p>the server will be hosted at <code>localhost:3000</code></p>
             </google-codelab-step>
             <google-codelab-step label="User Permissions" duration="5">
                 <p>
-                    The browser displays a prompt asking a user if they'd like to opt in to notifications.
+                    The browser displays a prompt asking a user if they'd like to opt-in to notifications.
                     If they accept, you can save their subscription details on the server and use them to send
                     notifications later. These subscription details are unique to each user, device, and browser, so if
                     a user logs in to your site on multiple devices, they'll be prompted once per device.
@@ -138,7 +138,7 @@ $ cd fe-guild-2019-pwa-server
 
                 <p>
                     Before you can start sending notifications to a user, you need to ask their permission by displaying
-                    a prompt. This prompt functionality is built into the browser by default, but first you need to add
+                    a prompt. This prompt functionality is built into the browser by default, but first, you need to add
                     a little code to ensure that this prompt is initiated. If a user accepts the prompt, you'll be
                     provided with a subscription object containing information about their subscription. But if a user
                     denies the prompt, you won't be able to send them any messages, and they won't be prompted again.
@@ -217,7 +217,7 @@ const askForNotificationPermission = () => {
                 <h3>Notifications options</h3>
 
                 <p>
-                    Notifications can be sent from the <code>Service Worker</code> registraton and can receive an <code>options</code>
+                    Notifications can be sent from the <code>Service Worker</code> registration and can receive an <code>options</code>
                     object that can control both the <code>visual</code> and <code>behavioral</code> aspect of the
                     notification.
                 </p>
@@ -353,33 +353,32 @@ const displayConfirmNotification = () => {
                         The platform may play a sound or vibrate the user's devices (depending on the platform).
                     </li>
                     <li>
-                        On some platforms the notification will disappear after a short period of time while others will
+                        On some platforms, the notification will disappear after a short period of time while others will
                         show the notification unless the user interacts with it. (For example, compare your
                         notifications on Android and Desktop.)
                     </li>
                 </ul>
 
                 <p>
-                    In this step we are going to look at how we can alter these default behaviours using options
+                    In this step, we are going to look at how we can alter these default behaviours using options
                     alone. These are relatively easy to implement and take advantage of.
                 </p>
 
                 <h3>Notification Click Event</h3>
 
                 <p>
-                    When a user clicks on a notification the default behaviour is for nothing to happen. It doesn't even
-                    close or remove the notification.
+                    When a user clicks on a notification, the default behaviour is for nothing to happen. It doesn't even
+                    close or removes the notification.
                 </p>
 
                 <p>
-                    The common practice for a notification click is for it to close and perform some other logic (i.e.
+                    The common practice for a notification click is for it to close and perform some other logic (i.e.,
                     open a window or make some API call to the application).
                 </p>
 
                 <p>
-                    To achieve this we need to add a <code>notificationclick</code> event listener to our service
-                    worker. This will
-                    be called when ever a notification is clicked.
+                    To achieve this, we need to add a <code>notificationclick</code> event listener to our service
+                    worker. This will be called whenever a notification is clicked.
                 </p>
 
                 <p>In <code>sw-template.js</code></p>
@@ -421,7 +420,7 @@ self.addEventListener('notificationclose', event => console.log('Notification wa
                 </p>
 
                 <p>
-                    Before subscribing a user you'll need to generate a set of "application server keys", which we'll
+                    Before subscribing a user, you'll need to generate a set of "application server keys", which we'll
                     cover later on.
                 </p>
 
@@ -491,7 +490,7 @@ const urlBase64ToUint8Array = base64String => {
 
                 <p>
                     You may notice code we’ve used frequently throughout this code lab. You register the Service Worker
-                    and, if it’s successful, you can then use the registration object
+                    and, if it’s successful, you can then use the registration object.
                 </p>
 
                 <p>
@@ -504,7 +503,7 @@ const urlBase64ToUint8Array = base64String => {
                     consists of both required and optional parameters.
                 </p>
 
-                <p>Lets look at all the options we can pass in.</p>
+                <p>Let's look at all the options we can pass in.</p>
 
                 <h3>userVisibleOnly</h3>
 
@@ -528,8 +527,8 @@ const urlBase64ToUint8Array = base64String => {
                 </p>
 
                 <p>
-                    Application server keys are a public and private key pair that are unique to your application. The
-                    private key should be kept a secret to your application and the public key can be shared freely.
+                    Application server keys are a public and private key-pair that are unique to your application. The
+                    private key should be kept a secret to your application, and the public key can be shared freely.
                 </p>
 
                 <p>
@@ -543,7 +542,7 @@ const urlBase64ToUint8Array = base64String => {
                     header which will contain information signed with your application server's <strong>private
                     key</strong>. When the push service receives a request to send a push message, it can validate this
                     signed <strong>Authorization</strong> header by looking up the public key linked to the endpoint
-                    receiving the request. If the signature is valid the push service knows that it must have come from
+                    receiving the request. If the signature is valid, the push service knows that it must have come from
                     the application server with the <strong>matching private key</strong>. It's basically a security
                     measure that prevents anyone else sending messages to an application's users.
                 </p>
@@ -573,7 +572,7 @@ const urlBase64ToUint8Array = base64String => {
 
                 <p>
                     The <code>PushSubscription</code> object contains all the required information needed to send a push
-                    messages to that user. If you print out the contents using <code>JSON.stringify()</code>, you'll see
+                    message to that user. If you print out the contents using <code>JSON.stringify()</code>, you'll see
                     the following:
                 </p>
 
@@ -601,12 +600,12 @@ const urlBase64ToUint8Array = base64String => {
                 <h2>Send a Subscription to the Server</h2>
 
                 <p>
-                    Once you have a push subscription you'll want to send it to your server. It's up to you how you do
-                    that but a tiny tip is to use JSON.stringify() to get all the necessary data out of the subscription
+                    Once you have a push subscription, you'll want to send it to your server. It's up to you how you do
+                    that, but a tiny tip is to use JSON.stringify() to get all the necessary data out of the subscription
                     object.
                 </p>
 
-                <p>Adapt the <code>configurePushSubscription</code> function</p>
+                <p>Adapt the <code>configurePushSubscription</code> function in <code>app.js</code></p>
 
                 <pre>
 <code>
@@ -647,7 +646,7 @@ const configurePushSubscription = () => {
 };
 </code></pre>
                 <p>
-                    With the <code>PushSubscription</code> details on our server we are good to send our user a message
+                    With the <code>PushSubscription</code> details on our server, we are good to send our user a message
                     whenever we want. In the <code>fe-guild-2019-pwa-server\routes\routes.js</code> the code is already
                     there waiting for us to receive the notifications.
                 </p>
@@ -707,11 +706,11 @@ self.addEventListener('push', event => {
                     Hooray! We've sent our first web push notification. You should now notice this appear in the
                     browser.
                     But there's one more step. For the user to interact with the push notification, we need to handle
-                    the click event of the notification. We already do that in the <code>notificationclick</code> but
-                    the event handler needs a little update
+                    the click event of the notification. We already do that in the <code>notificationclick</code>, but
+                    the event handler needs a little update.
                 </p>
 
-                <p>In <code>sw-template.js</code> replace the <code>notificationclick</code> event handler</p>
+                <p>In <code>sw-template.js</code> replace the <code>notificationclick</code> event handler.</p>
 
                 <pre>
 <code>
@@ -749,7 +748,7 @@ self.addEventListener('notificationclick', event => {
             <google-codelab-step label="Unsubscribe from notifications" duration="15">
                 <p>
                     Users can unsubscribe themselves by changing a few settings in their browser, but there may come a
-                    time when you want to programmatically unsubscribe a user. For example, you could add a simple
+                    time when you want to unsubscribe a user programmatically. For example, you could add a simple
                     button to your web page that would allow users to unsubscribe at the tap of a button instead of
                     digging around in their browser settings. The code in the following listing shows this in action.
                 </p>

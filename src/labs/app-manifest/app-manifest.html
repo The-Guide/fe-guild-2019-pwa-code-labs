@@ -49,7 +49,7 @@
                 <h2>Project Set Up</h2>
 
                 <p>
-                    Starting with this code lab we are going to build on top of existing project.
+                    Starting with this code lab, we are going to build on top of an existing project.
                     <strong>Fork</strong> and then <strong>Clone</strong> the following repository:
                     <code>https://github.com/The-Guide/fe-guild-2019-pwa.git</code>
                 </p>
@@ -167,7 +167,7 @@ $ cd fe-guild-2019-pwa
 
                 <p>
                     The <code>start_url</code> tells the browser where your application should start when it is
-                    launched, and prevents the app from starting on whatever page the user was on when they added your
+                    launched and prevents the app from starting on whatever page the user was on when they added your
                     app to their home screen.
                 </p>
 
@@ -213,7 +213,7 @@ $ cd fe-guild-2019-pwa
                             <code>fullscreen</code>
                         </td>
                         <td>
-                            All of the available display area is used and no user agent chrome is shown.
+                            All of the available display area is used, and no user agent chrome is shown.
                         </td>
                         <td>
                             <code>standalone</code>
@@ -226,7 +226,7 @@ $ cd fe-guild-2019-pwa
                         <td>
                             The application will look and feel like a standalone application. This can include the
                             application having a different window, its own icon in the application launcher, etc. In
-                            this mode, the user agent will exclude UI elements for controlling navigation, but can
+                            this mode, the user agent will exclude UI elements for controlling navigation but can
                             include other UI elements such as a status bar.
                         </td>
                         <td>
@@ -239,7 +239,7 @@ $ cd fe-guild-2019-pwa
                         </td>
                         <td>
                             <strong>Not supported by Chrome</strong><br>
-                            The application will look and feel like a standalone application, but will have a
+                            The application will look and feel like a standalone application but will have a
                             minimal set of UI elements for controlling navigation. The elements will vary by
                             browser.
                         </td>
@@ -290,7 +290,7 @@ $ cd fe-guild-2019-pwa
 
                 <p>
                     The <code>scope</code> defines the set of URLs that the browser considers to be within your app, and
-                    is used to decide when the user has left the app, and should be bounced back out to a browser tab.
+                    is used to decide when the user has left the app and should be bounced back out to a browser tab.
                     The <code>scope</code> controls the URL structure that encompasses all the entry and exit points in
                     your web app. Your <code>start_url</code> must reside within the scope.
                 </p>
@@ -323,7 +323,7 @@ $ cd fe-guild-2019-pwa
                 <h3><code>theme_color</code></h3>
 
                 <p>
-                    The <code>theme_color</code> sets the color of the tool bar, and may be reflected in the app's
+                    The <code>theme_color</code> sets the color of the toolbar and may be reflected in the app's
                     preview in task switchers.
                 </p>
 
@@ -376,7 +376,7 @@ $ cd fe-guild-2019-pwa
 
                 <h2>Putting them all together</h2>
 
-                <p>A more complete <code>manifest.json</code>:</p>
+                <p>A complete <code>manifest.json</code>:</p>
 
                 <pre>
 <code>
@@ -446,7 +446,7 @@ $ cd fe-guild-2019-pwa
 
                 <aside class="note">
                     <p>
-                        <strong>Add to homescreen</strong> is not working yet. We will get back to it.
+                        <strong>Add to home screen</strong> is not working yet. We will get back to it.
                     </p>
                 </aside>
             </google-codelab-step>
@@ -470,7 +470,7 @@ $ cd fe-guild-2019-pwa
 
                 <p>
                     The second way is to set the <code>display</code> property of your Web App Manifest to
-                    <code>standalone</code> (see previous step).
+                    <code>standalone</code> (see the previous step).
                 </p>
 
                 <h2>Change the status bar</h2>
@@ -498,7 +498,7 @@ $ cd fe-guild-2019-pwa
                         like.
                     </li>
                     <li>
-                        <code>black-translucent</code> results in white text and symbols, and the status bar will take
+                        <code>black-translucent</code> results in white text and symbols and the status bar will take
                         the same background color as the body element of your web app.
                     </li>
                 </ul>
@@ -562,7 +562,7 @@ $ cd fe-guild-2019-pwa
                     In order for this image to show, it is important that its dimensions are the same as those of the
                     device the app is run on. For example, to work on an iPhone X, <code>launch.png</code> would have
                     to be of the size 1125 by 2436 pixels. The problem that arises here is that there are multiple iOS
-                    devices with different resolutions, and unfortunately we cannot just simply repeat this code
+                    devices with different resolutions, and unfortunately, we cannot just simply repeat this code
                     multiple times for images of different sizes. Instead, we need to use the media attribute to specify
                     which launch image is intended for which device.
                 </p>
@@ -664,7 +664,7 @@ body {
                 <aside class="callout">
                     <p>
                         The easiest way to test on an iPhone is to create a <code>HotSpot</code> between the phone and
-                        the laptop or if you have a Mac you can connect the phone via USB cable. If you don't have an
+                        the laptop ,or if you have a Mac, you can connect the phone via USB cable. If you don't have an
                         iPhone try to group with a colleague that has one (or ask any of the facilitators).
                     </p>
                 </aside>
@@ -678,7 +678,7 @@ body {
 
                 <aside class="callout">
                     <p>
-                        In our case this will be extremely useful when we will push the code to <strong>GitHub
+                        In our case, this will be extremely useful when we push the code to <strong>GitHub
                         Pages</strong>. More on this on <strong>Service Workers</strong> code lab.
                     </p>
                 </aside>
@@ -762,7 +762,7 @@ window.addEventListener('load', () => {
             </google-codelab-step>
             <google-codelab-step label="Generating the app.manifest assets" duration="1">
                 <p>
-                    Generating by hand all the assets required for the Web App Manifest is not a difficult task but for
+                    Generating by hand all the assets required for the Web App Manifest is not a difficult task' but for
                     sure it is not a fun one.
                 </p>
 
@@ -794,7 +794,7 @@ window.addEventListener('load', () => {
 
                 <p>
                     If you're using a web app manifest, you'll probably want to set up an app install banner as well.
-                    For that there are some conditions to be met and we will handle them in the Service Workers code
+                    For that, there are some conditions to be met, and we will handle them in the Service Workers code
                     lab.
                 </p>
 

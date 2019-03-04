@@ -47,7 +47,7 @@
                 <ul>
                     <li>Chrome 49 or above</li>
                     <li>Your favorite text editor</li>
-                    <li>Basic knowledge of HTML, CSS and JavaScript (ES6/2015)</li>
+                    <li>Basic knowledge of HTML, CSS, and JavaScript (ES6/2015)</li>
                     <li>Basic knowledge of IndexedDB</li>
                     <li>Basic knowledge of Fetch API</li>
                 </ul>
@@ -56,7 +56,7 @@
                 <h2>Project Set Up</h2>
 
                 <p>
-                    In this code lab we are building on top of the project started in the <code>Service Worker
+                    In this code lab, we are building on top of the project started in the <code>Service Worker
                     Management with WorkBox</code> code lab.
                 </p>
 
@@ -87,7 +87,7 @@ $ cd fe-guild-2019-pwa
                 <p>and open the browser at <code>localhost:8080/fe-guild-2019-pwa/</code></p>
 
                 <p>
-                    In this code lab we are also going to connect the front end with the backend
+                    In this code lab, we are also going to connect the front end with the backend
                     (<strong>FINALLY!!!</strong>).
                 </p>
 
@@ -119,8 +119,8 @@ $ cd fe-guild-2019-pwa-server
 
                 <p>
                     In <strong>index.html</strong> inside the <code>div</code> with <code>id</code>
-                    <strong>create-post</strong> there is a <code>form</code> tag. We are going to use it to submit the
-                    data. Don't worry about the picture for the moment, the server will give us a dummy one back.
+                    <strong>create-post</strong>, there is a <code>form</code> tag. We are going to use it to submit the
+                    data. Don't worry about the picture for the moment; the server will give us a dummy one back.
                 </p>
 
                 <p>In <strong>feed.js</strong></p>
@@ -160,14 +160,14 @@ form.addEventListener('submit', event => {
 
                 <ol>
                     <li>
-                        First we declare a reference to the tags of interest <code>form</code>, <code>title</code> and
+                        First, we declare a reference to the tags of interest <code>form</code>, <code>title</code>, and
                         <code>location</code> text boxes.
                     </li>
                     <li>
                         Then we declare the <code>API_URL</code>
                     </li>
                     <li>
-                        Lastly we attach an <strong>event listener</strong> for the <code>submit</code> event of the
+                        Lastly, we attach an <strong>event listener</strong> for the <code>submit</code> event of the
                         <code>form</code>. We do a simple <code>fetch</code> to <code>POST</code> the form data
                     </li>
                 </ol>
@@ -206,14 +206,14 @@ form.addEventListener('submit', event => {
                 <h2>Displaying selfies</h2>
 
                 <p>
-                    So far we are sending data to the backend but we don't display anything in the frontend. Let's
-                    change
-                    that
+                    So far we are sending data to the backend, but we don't display anything in the frontend. Let's
+                    change that
                 </p>
 
                 <p>
-                    We will display the selfies as cards with picture, title and location but first let read the selfies
-                    from the server
+                    We will display the selfies as cards with picture, title, and location but first let read the
+                    selfies
+                    from the server.
                 </p>
 
                 <p>In <code>feed.js</code></p>
@@ -227,7 +227,7 @@ fetch(API_URL)
     });
 </code></pre>
                 <p>
-                    If you follow all the above procedures to refresh the Service Worker then you should see in
+                    If you follow all the above procedures to refresh the Service Worker, then you should see in
                     <code>Console</code> the data retrieved from the server. It is not an array but an object with the
                     <code>ids</code> of each selfie as a key. We need to convert this to an array and update the UI
                 </p>
@@ -257,7 +257,7 @@ const updateUI = selfies => {
 };
 </code></pre>
                 <p>
-                    Now there is an <code>updateUI</code> function but we just introduced two additional ones
+                    Now there is an <code>updateUI</code> function, but we just introduced two additional ones
                 </p>
 
                 <p><code>clearCards()</code> will clear all the previously created cards for us</p>
@@ -273,8 +273,8 @@ const clearCards = () => {
 };
 </code></pre>
                 <p>
-                    The parent for the selfie cards will be a <code>div</code> with the id <code>shared-moments</code>
-                    so we save a reference to it. Then inside the <code>clearCards()</code> function we remove all the
+                    The parent for the selfie cards will be a <code>div</code> with the id <code>shared-moments</code>,
+                    so we save a reference to it. Then inside the <code>clearCards()</code> function, we remove all the
                     children form it.
                 </p>
 
@@ -311,7 +311,7 @@ const createCard = selfie => {
 };
 </code></pre>
                 <p>
-                    Refresh (<strong><em>with all the ceremonies</em></strong>) and you should see something...clearly
+                    Refresh (<strong><em>with all the ceremonies</em></strong>), and you should see something...clearly
                     in need of some <code>CSS</code>.
                 </p>
 
@@ -359,20 +359,16 @@ const createCard = selfie => {
                 <aside class="note">
                     <p>
                         <strong>Deploying</strong> the server or using a <code>serverless</code> solution is the subject
-                        for another code lab so we have two options:
+                        for another code lab, so we have two options:
                     </p>
 
                     <ul>
                         <li>
                             <p>
-                                <strong>Hot spot</strong>: This should work for every one. Simply create a hot spot on
-                                your
-                                phone and connect your laptop's WiFi to it. If you restart the application
-                                <code>http-server</code>
-                                will show an <strong>Available on</strong> followed by a list of URLs where the
-                                application
-                                can be
-                                accessed.
+                                <strong>Hot spot</strong>: This should work for everyone. Simply create a hot spot on
+                                your phone and connect your laptop's WiFi to it. If you restart, the application
+                                <code>http-server</code> will show an <strong>Available on</strong> followed by a list
+                                of URLs where the application can be accessed.
                             </p>
                             <p>
                                 Change the <code>API_URL</code> to that address, build and refresh on mobile. You should
@@ -383,10 +379,8 @@ const createCard = selfie => {
                         </li>
                         <li>
                             <strong>Remote debugging via USB cable</strong>: This will work everywhere for
-                            <code>Android</code>
-                            phone users (in combination with Chrome and only on Mac with Safari for <code>iPhone</code>
-                            users.
-                            While connected simply open the app on the phone.
+                            <code>Android</code> phone users (in combination with Chrome and only on Mac with Safari for
+                            <code>iPhone</code> users. While connected simply open the app on the phone.
                         </li>
                     </ul>
                 </aside>
@@ -395,7 +389,8 @@ const createCard = selfie => {
 
                 <p>
                     In double quotes (") because we are going to use a <code>file</code> input for the moment and not
-                    the camera (other <code>code lab</code>) but on mobile you should get the option to take a photo and
+                    the camera (<code>Beyond PWA</code> code lab) but on mobile, you should get the option to take a
+                    photo and
                     use that as a file.
                 </p>
 
@@ -411,8 +406,8 @@ const createCard = selfie => {
 &lt;/div&gt;
 </code></pre>
                 <p>
-                    The <code>file</code> input will be our fallback if we cannot use the camera so we already prepare
-                    the the terrain.
+                    The <code>file</code> input will be our fallback if we cannot use the camera, so we already prepare
+                    the terrain.
                 </p>
 
                 <p>Now back in <code>feed.js</code></p>
@@ -461,7 +456,7 @@ imagePicker.addEventListener('change', event => picture = event.target.files[0])
                 </p>
 
                 <p>
-                    We are going to use IndexedDB to cache our selfies and to enable that we need to add some utilities
+                    We are going to use IndexedDB to cache our selfies and to enable that we need to add some utilities.
                 </p>
 
                 <ol>
@@ -499,7 +494,7 @@ importScripts('src/js/utility.js');
                 <h3><code>utility.js</code></h3>
 
                 <p>
-                    This file will have code needed by both the Service Worker and the app itself
+                    This file will have the code needed by both the Service Worker and the app itself
                 </p>
 
                 <p>
@@ -514,7 +509,7 @@ const SERVER_URL = 'http://192.168.1.162:3000';
 const API_URL = `${SERVER_URL}/selfies`;
 </code></pre>
                 <p>
-                    Next we need code to manage an <code>IndexedDB</code> database and stores. We want to open the
+                    Next, we need code to manage an <code>IndexedDB</code> database and stores. We want to open the
                     database, write data to a store, read all data, delete all data or delete just one item.
                 </p>
 
@@ -577,7 +572,7 @@ const deleteItemFromData = (storeName, id) => {
                 <h2><code>sw-template.js</code></h2>
 
                 <p>
-                    Let's first cache the selfies as they arrive from the server. For that we need to register a route
+                    Let's first cache the selfies as they arrive from the server. For that, we need to register a route
                     in <code>sw-template.js</code>
                 </p>
 
@@ -601,9 +596,10 @@ workbox.routing.registerRoute(API_URL, args => {
                 <h3>Explanation</h3>
 
                 <p>
-                    We register a route for the <code>API_URL</code> and if the <code>fetch</code> is successful we call
+                    We register a route for the <code>API_URL</code>, and if the <code>fetch</code> is successful, we
+                    call
                     the <code>clearAllData</code> function to delete all entries from the <code>selfies</code> store.
-                    After everything is deleted we call <code>writeData</code> to save the fresh data from the server,
+                    After everything is deleted, we call <code>writeData</code> to save the fresh data from the server
                     and return the <code>response</code> back to the UI.
                 </p>
 
@@ -632,14 +628,13 @@ fetch(API_URL)
     });
 </code></pre>
                 <p>
-                    Notice the presence of the <code>networkDataReceived</code> variable. By default it is set to
-                    <code>false</code> but when we get data we set it to <code>true</code>.
+                    Notice the presence of the <code>networkDataReceived</code> variable. By default, it is set to
+                    <code>false</code>, but when we get data, we set it to <code>true</code>.
                 </p>
 
                 <p>
-                    Next add code to read the selfies from <code>IndexedDB</code> if
-                    <strong>networkDataReceived</strong> is
-                    <code>false</code>
+                    Next, add code to read the selfies from <code>IndexedDB</code> if
+                    <strong>networkDataReceived</strong> is <code>false</code>
                 </p>
 
                 <pre>
@@ -658,9 +653,10 @@ if ('indexedDB' in window) {
 
                 <p>
                     We first check to see if <code>IndexedDB</code> is supported. Notice that we didn't check for it in
-                    the Service Worker. If the broswer support <code>service workers</code> will also support
+                    the Service Worker. If the broswer supports <code>service workers</code> will also support
                     <code>IndexedDB</code>. Then we read the data from the <code>selfies</code> store by calling the
-                    <code>readAllData</code> function and if <strong>networkDataReceived</strong> is false we update the
+                    <code>readAllData</code> function, and if <strong>networkDataReceived</strong> is false, we update
+                    the
                     UI.
                 </p>
 
@@ -713,7 +709,7 @@ if ('indexedDB' in window) {
                     BackgroundSync is a new web API that lets you defer actions until the user has stable connectivity,
                     which makes it great for ensuring that whatever the user wants to send is sent when they regain
                     connectivity. For example, let’s say someone using the Progressive Selfies web app wants to take a
-                    selfie in the perfect spot but there is no signal and the app is offline. With BackgroundSync, they
+                    selfie in the perfect spot but there is no signal, and the app is offline. With BackgroundSync, they
                     can "send" can do that while offline, and once they regain connectivity, the Service Worker will
                     send the data in the background.
                 </p>
@@ -721,7 +717,7 @@ if ('indexedDB' in window) {
                 <h2>Sync selfies</h2>
 
                 <p>
-                    To apply <code>BackgroundSync</code> to our app we need to create a store in our
+                    To apply <code>BackgroundSync</code> to our app, we need to create a store in our
                     <strong>IndexedDB</strong> database to hold our <em>"to be synced selfies"</em>.
                 </p>
 
@@ -739,11 +735,11 @@ const dbPromise = idb.openDb('selfies-store', 1, upgradeDB => {
     }
 });
 </code></pre>
-                <p>The code should be self explanatory.</p>
+                <p>The code should be self-explanatory.</p>
 
                 <p>
-                    Next we need to change the way we send data to the server. We will always use
-                    <code>BackgroundSync</code> unless the browser doesn't support it
+                    Next, we need to change the way we send data to the server. We will always use
+                    <code>BackgroundSync</code> unless the browser doesn't support it.
                 </p>
 
                 <p>In <code>feed.js</code></p>
@@ -805,17 +801,17 @@ form.addEventListener('submit', event => {
 
                 <p>
                     First, we do a simple check to see if the browser supports Service Workers. If it does, and if the
-                    Service Worker is ready register a sync with the tag <code>sync-new-posts</code>. This is a simple
-                    string that is used to recognize this event. You can think of these sync tags as simple labels for
-                    different actions. You can have as many as you want.
+                    Service Worker is ready, register a <code>sync</code> with the tag <code>sync-new-posts</code>.
+                    This is a simple string that is used to recognize this event. You can think of these sync tags as
+                    simple labels for different actions. You can have as many as you want.
                 </p>
 
                 <p>
-                    We’re registering a sync using the registration object and providing it with a tag to identify it.
-                    Each sync must have a unique tag name because if we register a sync using the same tag as a pending
-                    sync, they will combine together. If the user tries to send seven messages while offline, they’ll
-                    only get one sync when they regain connectivity. If you did want this to happen seven times, you
-                    need to use seven unique tag names.
+                    We’re registering a <code>sync</code> using the registration object and providing it with a tag to
+                    identify it. Each sync must have a unique tag name because if we register a <code>sync</code> using
+                    the same tag as a <code>pending sync</code>, they will combine together. If the user tries to send
+                    seven messages while offline, they’ll only get one sync when they regain connectivity. If you did
+                    want this to happen seven times, you need to use seven unique tag names.
                 </p>
 
                 <p>
@@ -825,13 +821,13 @@ form.addEventListener('submit', event => {
                 </p>
 
                 <p>
-                    If everything was successful we show a <code>toast</code> message to the user.
+                    If everything was successful, we show a <code>toast</code> message to the user.
                 </p>
 
                 <h3>The Service Worker</h3>
 
                 <p>
-                    Before BackgroundSync will function correctly, you need to update the Service Worker code. The
+                    Before BackgroundSync functions correctly, you need to update the Service Worker code. The
                     following listing contains the code that will respond to our newly created sync event.
                 </p>
 
@@ -876,7 +872,7 @@ self.addEventListener('sync', event => {
                     The listing above adds an event listener for the sync event. This event will only fire when the
                     browser believes that the user has connectivity. You may also notice the check to confirm that the
                     current event has a tag that matches the string 'sync-new-selfies'. This tag was added to the submit
-                    listener. If ywe didn't have this tag, the sync event would fire every time the user had
+                    listener. If we didn't have this tag, the sync event would fire every time the user had
                     connectivity and process your logic repeatedly.
                 </p>
 
@@ -888,7 +884,7 @@ self.addEventListener('sync', event => {
                 </p>
 
                 <p>
-                    If all these steps were successful, the fetch request will return a successful result. If for any
+                    If all these steps were successful, the fetch request would return a successful result. If for any
                     reason the fetch request wasn’t successful, the BackgroundSync API will try again. BackgroundSync
                     has some clever retry functionality built into it to deal with a situation where the promise might
                     fail.
@@ -921,15 +917,15 @@ self.addEventListener('sync', event => {
                 <p>
                     Imagine the following scenario: a user opens up their phone to see that they already have the latest
                     selfies for the Progressive Selfies App—which is strange because they’re currently offline and
-                    haven’t visited the web app today. Instead, a sync happened in the background while they were
-                    sleeping. New data was synced to their phone before they even woke up and was available for them in
-                    an instant. Very impressive!
+                    haven’t visited the web app today. Instead, a <code>sync</code> happened in the background while
+                    they were sleeping. New data was synced to their phone before they even woke up and was available
+                    for them in an instant. Very impressive!
                 </p>
 
                 <p>
-                    This feature, known as <code>PeriodicSync</code>, allows you to schedule a sync for a predetermined
-                    time. It’s simple to set up, doesn't require any server configuration, andallows the browser to
-                    optimize when it fires in order to be helpful and less disruptive to the user.
+                    This feature, known as <code>PeriodicSync</code>, allows you to schedule a <code>sync</code> for a
+                    predetermined time. It’s simple to set up, doesn't require any server configuration, and allows the
+                    browser to optimize when it fires in order to be helpful and less disruptive to the user.
                 </p>
 
                 <p>
@@ -990,20 +986,20 @@ if ('serviceWorker' in navigator && 'SyncManager' in window) {
                 <p>
                     It’s worth noting that <code>PeriodicSync</code> isn't meant to be an exact timer. Although the API
                     accepts a <code>minPeriod</code> in milliseconds, it could mean that the sync might not fire exactly
-                    on time. All this could be due to network connection, battery state, or the settings of the current
-                    device. Due to the nature of PeriodicSync requiring device resources, it’s highly likely that it
-                    will require opt-in permission from the user.
+                    on time. All this could be due to the network connection, battery state, or the settings of the
+                    current device. Due to the nature of PeriodicSync requiring device resources, it’s highly likely
+                    that it will require opt-in permission from the user.
                 </p>
             </google-codelab-step>
             <google-codelab-step label="Summary" duration="1">
                 <p>
                     BackgroundSync is a new web API that lets you defer actions until the user has stable connectivity.
-                    It behaves similar to the outbox on an email client—messages are queued up in the outbox and as soon
+                    It behaves similar to the outbox on an email client—messages are queued up in the outbox, and as soon
                     as there’s a connection, they’re sent.
                 </p>
 
                 <p>
-                    Tags are useful because they allow you to “tag” a specific event so you know how to respond
+                    Tags are useful because they allow you to “tag” a specific event, so you know how to respond
                     appropriately in your sync. Each sync needs to have a unique tag name.
                 </p>
 
@@ -1013,13 +1009,13 @@ if ('serviceWorker' in navigator && 'SyncManager' in window) {
 
                 <p>
                     You can test BackgroundSync in action by disabling your connection to the network; as soon as you
-                    re-connect, your queued syncs will be sent
+                    re-connect, your queued syncs will be sent.
                 </p>
 
                 <p>
-                    Another new API called PeriodicSync allows you to schedule a sync for a predetermined time; it has a
-                    number of settings that allow you to schedule how frequently to run, which network connections it
-                    can run under, and the allowed battery states of the device to run on.
+                    Another new API called PeriodicSync allows you to schedule a <code>sync</code> for a predetermined
+                    time; it has a number of settings that allow you to schedule how frequently to run, which network
+                    connections it can run under, and the allowed battery states of the device to run on.
                 </p>
 
                 <h2>What we've learned</h2>

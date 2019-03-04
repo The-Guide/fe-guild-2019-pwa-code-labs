@@ -22,7 +22,7 @@
 
                 <p>
                     "IndexedDB is a low-level API for client-side storage of significant amounts of structured data,
-                    including files/blobs. This API uses indexes to enable high performance searches of this data.
+                    including files/blobs. This API uses indexes to enable high-performance searches of this data.
                     While DOM Storage is useful for storing smaller amounts of data, it is less useful for storing
                     larger amounts of structured data. IndexedDB provides a solution."
                 </p>
@@ -30,7 +30,7 @@
                 <p>
                     Each IndexedDB database is unique to an origin (typically, this is the site domain or subdomain),
                     meaning it cannot access or be accessed by any other origin. Data storage limits are usually quite
-                    large, if they exist at all, but different browsers handle limits and data eviction differently.
+                    large if they exist at all, but different browsers handle limits and data eviction differently.
                 </p>
 
                 <h2>What You'll Learn</h2>
@@ -95,7 +95,7 @@ $ npm install -g idb
             <google-codelab-step label="IndexedDB terms" duration="3">
                 <p>
                     <code>IndexedDB</code> is one of the storage capabilities introduced into browsers over the years.
-                    It’s a key/value store (a noSQL database) considered to be the definitive solution for storing data
+                    It’s a key/value store (a NoSQL database) considered to be the definitive solution for storing data
                     in browsers.
                 </p>
 
@@ -106,7 +106,7 @@ $ npm install -g idb
                 </p>
 
                 <p>
-                    It's supported in all modern browsers and supports transactions, versioning and gives good
+                    It's supported in all modern browsers and supports transactions, versioning and gives a good
                     performance.
                 </p>
 
@@ -115,7 +115,7 @@ $ npm install -g idb
                 <p>
                     This is the highest level of IndexedDB. It contains the object stores, which in turn contain the
                     data you would like to persist. You can create multiple databases with whatever names you choose,
-                    but generally there is one database per app.
+                    but generally, there is one database per app.
                 </p>
 
                 <p>
@@ -131,7 +131,7 @@ $ npm install -g idb
                     persists blog posts and user profiles, you could imagine two object stores. Unlike tables in
                     traditional databases, the actual JavaScript data types of data within the store do not need to be
                     consistent (for example, if there are three people in the 'people' object store, their age
-                    properties could be 53, 'twenty-five', and unknown ).
+                    properties could be 53, 'twenty-five' and unknown ).
                 </p>
 
                 <p>
@@ -163,8 +163,8 @@ $ npm install -g idb
                 <h2>Transaction</h2>
 
                 <p>
-                    A transaction is wrapper around an operation, or group of operations, that ensures database
-                    integrity. If one of the actions within a transaction fail, none of them are applied and the
+                    A transaction is a wrapper around an operation, or group of operations, that ensures database
+                    integrity. If one of the actions within a transaction fails, none of them are applied and the
                     database returns to the state it was in before the transaction began. All read or write operations
                     in IndexedDB must be part of a transaction. This allows for atomic read-modify-write operations
                     without worrying about other threads acting on the database at the same time.
@@ -182,7 +182,7 @@ $ npm install -g idb
                 <h2>Cursor</h2>
 
                 <p>
-                    A mechanism for iterating over multiple records in database.
+                    A mechanism for iterating over multiple records in the database.
                 </p>
 
                 <h2>IndexedDB Promised library</h2>
@@ -246,7 +246,7 @@ idb.openDb(name, version, upgradeDB => {});
                 </p>
 
                 <p>
-                    <code>upgradeCallback</code> is called if <code>version</code> is greater than the version last
+                    <code>upgradeCallback</code> is called if the <code>version</code> is greater than the version last
                     opened. It's similar to IDB's <code>onupgradeneeded</code>. The callback receives an instance of
                     <code>UpgradeDB</code>
                 </p>
@@ -377,12 +377,12 @@ if (!upgradeDB.objectStoreNames.contains('store3')) {
             </google-codelab-step>
             <google-codelab-step label="Adding items to the database" duration="4">
                 <p>
-                    You can use the <code>put</code> method of the object store, but first we need a reference to it,
+                    You can use the <code>put</code> method of the object store, but first, we need a reference to it,
                     which we can get from <code>upgradeDB.createObjectStore()</code> when we create it.
                 </p>
 
                 <p>
-                    When using <code>put</code>, the value is the first argument, the key is the second. This is because
+                    When using <code>put</code>, the value is the first argument, and the key is the second. This is because
                     if you specify <code>keyPath</code> when creating the object store, you don’t need to enter the key
                     name on every put() request, you can just write the value.
                 </p>
@@ -401,7 +401,7 @@ idb.openDb('mydb', 1, upgradeDB => {
 
                 <p>
                     To add items later down the road, you need to create a <code>transaction</code>, that ensures
-                    database integrity (if an operation fails, all the operations in the transaction are rolled back
+                    database integrity (if an operation fails, all the operations in the transaction are rolled back,
                     and the state goes back to a known state).
                 </p>
 
@@ -564,7 +564,7 @@ searchPhoneBetweenPrices(300, 1000);
                 </ol>
             </google-codelab-step>
             <google-codelab-step label="Deleting from IndexedDB" duration="3">
-                <p>Deleting the database, an object store and data</p>
+                <p>Deleting the database, an object store, and data</p>
 
                 <h2>Delete a Database</h2>
 
@@ -573,7 +573,7 @@ searchPhoneBetweenPrices(300, 1000);
                 <h2>Delete an Object Store</h2>
 
                 <p>
-                    An object store can only be deleted in the callback when opening a db, and that callback is only
+                    An object store can only be deleted in the callback when opening a DB, and that callback is only
                     called if you specify a version higher than the one currently installed:
                 </p>
 

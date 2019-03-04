@@ -18,14 +18,14 @@
                 <p>
                     Whenever we send or retrieve information with JavaScript, we initiate a thing known as an Ajax call.
                     Ajax is a technique to send and retrieve information behind the scenes without needing to refresh
-                    the page. It allows browsers to send and retrieve information, then do things with what it gets
+                    the page. It allows browsers to send and retrieve information, then does things with what it gets
                     back, like add or change HTML on the page.
                 </p>
 
                 <p>
-                    We all remember the dreaded <code>XMLHttpRequest</code> we used back in the day to make requests,
-                    it involved some really messy code, it didn't give us promises and let's just be honest, it wasn't
-                    pretty JavaScript, right? Maybe if you were using it behind some library.
+                    We all remember the dreaded <code>XMLHttpRequest</code> we used back in the day to make requests; it
+                    involved some messy code, it didn't give us promises and let's be honest, it wasn't pretty
+                    JavaScript, right? Maybe if you were using it behind some library.
                 </p>
 
                 <p>
@@ -43,7 +43,7 @@
                     <li>Basic fetch usage</li>
                     <li>Response Object</li>
                     <li>Request Object</li>
-                    <li>Request headers</li>
+                    <li>Request Headers</li>
                     <li>POST Requests</li>
                     <li>How to cancel a fetch request</li>
                 </ul>
@@ -143,8 +143,10 @@ fetch('https://httpbin.org/get')
 </code></pre>
 
                 <p>
-                    We start by checking the very convenient <code>ok</code> read-only property of the <code>Response</code>
-                    interface. The property contains a Boolean stating whether the response was succesful (status in range
+                    We start by checking the very convenient <code>ok</code> read-only property of the
+                    <code>Response</code>
+                    interface. The property contains a Boolean stating whether the response was successful (status in
+                    range
                     200-299) or not.
                 </p>
 
@@ -157,8 +159,9 @@ fetch('https://httpbin.org/get')
                 <h2>Exercises</h2>
 
                 <ol>
-                    <li>Run de code in this lesson</li>
-                    <li>Head over to <a href="https://httpbin.org">httpbin.org</a> and play with different GET requests</li>
+                    <li>Run the code in this lesson</li>
+                    <li>Head over to <a href="https://httpbin.org">httpbin.org</a> and play with different GET requests
+                    </li>
                     <li>Convert the fetch code to use async/await</li>
                 </ol>
             </google-codelab-step>
@@ -273,7 +276,7 @@ fetch('https://httpbin.org/get')
                         <code>referrer</code>: the referrer of the request
                     </li>
                     <li>
-                        <code>cache</code>: the cache mode of the request (e.g. default, reload, no-cache)
+                        <code>cache</code>: the cache mode of the request (e.g., default, reload, no-cache)
                     </li>
                 </ul>
 
@@ -283,7 +286,8 @@ fetch('https://httpbin.org/get')
                 </p>
 
                 <p>
-                    The full API can be found on <a href="https://developer.mozilla.org/en-US/docs/Web/API/Request">MDN</a>
+                    The full API can be found on <a
+                    href="https://developer.mozilla.org/en-US/docs/Web/API/Request">MDN</a>.
                 </p>
 
                 <h2>Request Headers</h2>
@@ -344,11 +348,13 @@ header.get('Content-Type');
 
                 <h2>Exercise</h2>
 
-                <ol><li>Experiment with the code in this lesson.</li></ol>
+                <ol>
+                    <li>Experiment with the code in this lesson.</li>
+                </ol>
             </google-codelab-step>
             <google-codelab-step label="POST Requests" duration="3">
                 <p>
-                    Fetch also allows to use any other HTTP method in your request: POST, PUT, DELETE or OPTIONS
+                    Fetch also allows the usage of any other HTTP method in the request: POST, PUT, DELETE or OPTIONS
                 </p>
 
                 <p>
@@ -398,12 +404,12 @@ fetch('https://httpbin.org/anything', options)
                 <p>
                     When we make a fetch request, the response will be given a <code>response.type</code> of
                     <code>basic</code>, <code>cors</code> or <code>opaque</code>. These <code>types</code> indicate
-                    where the resource has come from and can be used to inform how should treat the response object.
+                    where the resource has come from and can be used to inform us how we should treat the response object.
                 </p>
 
                 <p>
-                    When a request is made for a resource on the same origin, the response will have a <code>basic</code>
-                    type and there aren't any restrictions on what you can view from the response.
+                    When a request is made for a resource on the same origin, the response will have a
+                    <code>basic</code> type, and there aren't any restrictions on what you can view from the response.
                 </p>
 
                 <p>
@@ -414,7 +420,7 @@ fetch('https://httpbin.org/anything', options)
 
                 <p>
                     An <code>opaque</code> response is for a request made for a resource on a different origin that
-                    doesn't return CORS headers. With an opaque response we won't be able to read the data returned or
+                    doesn't return CORS headers. With an opaque response, we won't be able to read the data returned or
                     view the status of the request, meaning we can't check if the request was successful or not.
                 </p>
 
@@ -424,7 +430,7 @@ fetch('https://httpbin.org/anything', options)
 
                 <ul>
                     <li>
-                        <code>same-origin</code> only succeeds for requests for assets on the same origin, all other
+                        <code>same-origin</code> only succeeds for requests for assets on the same origin; all other
                         requests will reject.
                     </li>
                     <li>
@@ -432,7 +438,7 @@ fetch('https://httpbin.org/anything', options)
                         return the appropriate CORS headers.
                     </li>
                     <li>
-                        <code>cors-with-forced-preflight</code> will always pefrom a
+                        <code>cors-with-forced-preflight</code> will always perform a
                         <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Preflighted_requests">
                             preflight check
                         </a>
@@ -568,11 +574,11 @@ fetch('https://httpbin.org/anything', { signal })
         Polymer({
             is: 'codelab-fetch-api',
 
-            _twoWayBinding: function(value) {
+            _twoWayBinding: function (value) {
                 return '{{' + value + '}}';
             },
 
-            _oneWayBinding: function(value) {
+            _oneWayBinding: function (value) {
                 return '[[' + value + ']]';
             }
         });

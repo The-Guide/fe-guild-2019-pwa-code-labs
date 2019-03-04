@@ -49,14 +49,14 @@
                 <ul>
                     <li>Firefox 61, Chrome 58, Edge 11, Safari 11.1, Opera 44 or above</li>
                     <li>Your favorite text editor</li>
-                    <li>Basic knowledge of HTML, CSS and JavaScript (ES6/2015)</li>
+                    <li>Basic knowledge of HTML, CSS, and JavaScript (ES6/2015)</li>
                 </ul>
             </google-codelab-step>
             <google-codelab-step label="Getting set up" duration="3">
                 <h2>Project Set Up</h2>
 
                 <p>
-                    In this code lab we are building on top of the project started in the <code>Understanding the App
+                    In this code lab, we are building on top of the project started in <code>Understanding the App
                     Manifest</code> code lab.
                 </p>
 
@@ -105,7 +105,7 @@ $ cd fe-guild-2019-pwa
                     </li>
                     <li>
                         The Service worker will now control pages, but only those opened after the
-                        <code>register()</code> is successful. i.e. a document starts life with or without a Service
+                        <code>register()</code> is successful. i.e., a document starts life with or without a Service
                         worker and maintains that for its lifetime. So documents will have to be reloaded to actually
                         be controlled.
                     </li>
@@ -118,7 +118,7 @@ $ cd fe-guild-2019-pwa
                 <h2>Register a Service Worker</h2>
 
                 <p>
-                    To install a service worker you need to kick start the process by registering it in your page. This
+                    To install a service worker, you need to kick start the process by registering it on your page. This
                     tells the browser where your service worker JavaScript file lives.
                 </p>
 
@@ -165,7 +165,7 @@ window.addEventListener('load', () => {
                 </p>
 
                 <p>
-                    Now you can check that a service worker is enabled by opening the Chrome Develoer Tools and then
+                    Now you can check that a service worker is enabled by opening the Chrome Developer Tools and then
                     <code>Application -> Service Workers</code>
                 </p>
 
@@ -187,7 +187,7 @@ window.addEventListener('load', () => {
 
                 <ul>
                     <li>
-                        You are not running your application through HTTPS. During development you'll be able to use
+                        You are not running your application through HTTPS. During development, you'll be able to use
                         service worker through <code>localhost</code>, but to deploy it on a site you'll need to have
                         HTTPS setup on your server.
                     </li>
@@ -212,7 +212,7 @@ window.addEventListener('load', () => {
                         Update the application with the code above
                     </li>
                     <li>
-                        Check in Chrome Developer Tools that the service is active
+                        Check, in Chrome Developer Tools that the service is active
                     </li>
                 </ol>
             </google-codelab-step>
@@ -259,7 +259,7 @@ window.addEventListener('load', () => {
                             <code>message</code>
                         </td>
                         <td>
-                            It is send when a message is received in a service worker from another context
+                            It is sent when a message is received in a service worker from another context
                         </td>
                     </tr>
                     <tr>
@@ -293,6 +293,8 @@ window.addEventListener('load', () => {
 
                 <p>Let's listen to the main lifecycle events <code>install</code> and <code>activate</code></p>
 
+                <p>In <code>sw.js</code></p>
+
                 <pre>
 <code>
 self.addEventListener('install', event => {
@@ -306,7 +308,7 @@ self.addEventListener('activate', event => {
 });
 </code></pre>
                 <p>
-                    In the <code>install</code> callback is calling the <code>skipWaiting()</code> function to
+                    In the <code>install</code>, callback is calling the <code>skipWaiting()</code> function to
                     trigger the <code>activate</code> event and tell the Service Worker to start working immediately
                     without waiting for the user to navigate or reload the page.
                 </p>
@@ -330,7 +332,7 @@ self.addEventListener('activate', event => {
                         Update the application with the code above
                     </li>
                     <li>
-                        Check in Chrome Developer Tools that the events are triggered
+                        Check, in Chrome Developer Tools that the events are triggered
                     </li>
                 </ol>
             </google-codelab-step>
@@ -420,9 +422,9 @@ self.addEventListener('fetch', event => {
 
                 <aside class="note">
                     <p>
-                        The <strong>App Install Banner</strong> will show up only on Chrome on Android but we really
-                        need to serve the app over HTTPS. In theory it could work on <code>localhost</code> with an
-                        Android device connected via USB cable but I didn't manage to make it work.
+                        The <strong>App Install Banner</strong> will show up only on Chrome on Android, but we really
+                        need to serve the app over HTTPS. In theory, it could work on <code>localhost</code> with an
+                        Android device connected via USB cable, but I didn't manage to make it work.
                     </p>
                 </aside>
 
@@ -463,14 +465,14 @@ self.addEventListener('fetch', event => {
                         </p>
                         <pre><code>$ npm run deploy</code></pre>
                         <p>
-                            First deployment will take longer because will create a new branch <code>gh-pages</code> and
+                            The first deployment will take longer because it will create a new branch <code>gh-pages</code> and
                             will activate <code>GitHub Pages</code> on this new branch.
                         </p>
                     </li>
                     <li>
                         Take a few minutes (max 5) break and try
                         <pre><code>https://[YOUR GITHUB PROFILE].github.io/fe-guild-2019-pwa/</code></pre>
-                        You can now access the application from your phone, and if you have an Android phone you will
+                        You can now access the application from your phone, and if you have an Android phone, you will
                         also get an <code>App Install Banner</code> <em>(Try to group around a colleague that has one to
                         see it in action)</em>.
                     </li>
@@ -652,8 +654,8 @@ const openCreatePostModal = () => {
 
                 <p>
                     The power of Service Workers lies in their ability to intercept HTTP requests. In this step,
-                    we’ll use this ability to intercept HTTP requests and responses to provide users with a lightning
-                    fast response directly from cache.
+                    we’ll use this ability to intercept HTTP requests and responses to provide users with a
+                    lightning-fast response directly from cache.
                 </p>
 
                 <h3>Precaching during Service Worker installation</h3>
@@ -710,13 +712,13 @@ self.addEventListener('install', event => {
                 <p>
                     The code above taps into the install event and adds a list of files <code>URLS_TO_PRECACHE</code>
                     during this stage. It also references a variable called <code>CACHE_STATIC_NAME</code>. This is a
-                    string value that I’ve set to name the cache. You can name each cache differently and you can even
+                    string value that I've set to name the cache. You can name each cache differently, and you can even
                     have multiple different copies of the cache because each new string makes it unique. This will come
                     in handy later in the step when we look at versioning and cache busting.
                 </p>
 
                 <p>
-                    You can see that once the cache has been opened, you can then begin to add resources into it. Next
+                    You can see that once the cache has been opened, you can then begin to add resources into it. Next,
                     you call <code>cache.addAll()</code> and pass in your array of files. The
                     <code>event.waitUntil()</code>
                     method uses a JavaScript promise to know how long installation takes and whether it succeeded.
@@ -740,7 +742,7 @@ self.addEventListener('install', event => {
                     <p>
                         This was the case with our material design CSS file
                         <strong>material.indigo-deep_orange.min.css</strong>.
-                        It was served from a CDN that doesn't provide CORS headers. In this case I've chosen to download
+                        It was served from a CDN that doesn't provide CORS headers. In this case, I've chosen to download
                         it and serve it from the <code>lib</code> folder instead.
                     </p>
                 </aside>
@@ -756,7 +758,7 @@ self.addEventListener('install', event => {
                 </p>
 
                 <p>
-                    But if you look in the <code>Network</code> tab (even after refresh) the files are still fetched
+                    But if you look in the <code>Network</code> tab (even after a refresh) the files are still fetched
                     over
                     the network:
                 </p>
@@ -792,14 +794,13 @@ self.addEventListener('fetch', event => {
                 <p>
                     We are checking if the incoming URL matches anything that might exist in our current cache using
                     the <code>caches.match()</code> function. If it does, return that cached resource, but if the
-                    resource doesn't exist in cache, continue as normal and fetch the requested resource.
+                    resource doesn't exist in the cache, continue as normal and fetch the requested resource.
                 </p>
 
                 <p>
-                    After the Service Worker installs and activates refresh the page and check again the
-                    <code>Network</code>
-                    tab. The Service Worker will now intercept the HTTP request and load the appropriate resources
-                    instantly from cache instead of making a network request to the server.
+                    After the Service Worker installs and activates refresh the page and check the <code>Network</code>
+                    tab again. The Service Worker will now intercept the HTTP request and load the appropriate resources
+                    instantly from the cache instead of making a network request to the server.
                 </p>
 
                 <p style="display:flex; justify-content: center; align-items: center;">
@@ -838,7 +839,7 @@ self.addEventListener('fetch', event => {
 
                 <p>
                     Because Service Workers can intercept HTTP requests, this is the perfect opportunity to make the
-                    HTTP request and then store the response in cache. This means that we will request the resource
+                    HTTP request and then store the response in the cache. This means that we will request the resource
                     and then cache it immediately. That way, as the next HTTP request is made for the same resource,
                     we can instantly fetch it out of the Service Worker cache.
                 </p>
@@ -890,14 +891,14 @@ self.addEventListener('fetch', event => {
 </code></pre>
                 <p>
                     The code above caches the resource fetched from the network and returns it back to the page. If we
-                    reload the page the resources cached in both caches will be matched.
+                    reload the page, the resources cached in both caches will be matched.
                 </p>
 
                 <h3>Cache versioning</h3>
 
                 <p>
                     There will be a point in time where the Service Worker cache will need updating. If we make changes
-                    to the web application, when need to be sure users receive the newer version of files instead of
+                    to the web application when need to be sure users receive the newer version of files instead of
                     older versions. As you can imagine, serving older files by mistake would cause havoc on a site.
                 </p>
 
@@ -953,9 +954,9 @@ self.addEventListener('activate', event => {
                 <h2>Custom <code>Offline page</code></h2>
 
                 <p>
-                    Even if we cache the <code>help</code> page when we navigate to it we may happen to become offline
-                    before it gets cached, and in this case we get the browser's default offline page. To account for
-                    this case we can create our own <code>offline.html</code> page:
+                    Even if we cache the <code>help</code> page when we navigate to it, we may happen to become offline
+                    before it gets cached, and in this case, we get the browser's default offline page. To account for
+                    this case, we can create our own <code>offline.html</code> page:
                 </p>
 
                 <ol>
