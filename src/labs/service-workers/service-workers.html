@@ -157,7 +157,7 @@ window.addEventListener('load', () => {
 
                 <p>
                     One subtlety with the <code>register()</code> method is the location of the service worker file.
-                    In this case that the service worker file is at the root of the domain. This means that the service
+                    In this case, the service worker file is at the root of the domain. This means that the service
                     worker's scope will be the entire origin. In other words, this service worker will receive fetch
                     events for everything on this domain. If we register the service worker file at
                     <code>/src/js/sw.js</code>, then the service worker would only see fetch events for pages whose URL
@@ -353,7 +353,7 @@ self.addEventListener('activate', event => {
                         On mobile, Chrome will generate a WebAPK, creating an even more integrated experience for your
                         users.
                     </li>
-                    <li>On desktop, your app will installed, and run in an app window.</li>
+                    <li>On desktop, your app will be installed, and run in an app window.</li>
                 </ul>
 
                 <h2>What are the criteria?</h2>
@@ -381,7 +381,7 @@ self.addEventListener('activate', event => {
                             </li>
                         </ul>
                     </li>
-                    <li>Served over HTTPS (required for service workers)</li>
+                    <li>Is served over HTTPS (required for service workers)</li>
                     <li>
                         Has registered a service worker with a <code>fetch</code> event handler
                     </li>
@@ -393,7 +393,7 @@ self.addEventListener('activate', event => {
                 </p>
 
                 <p>
-                    We meet all the criteria above, but one: we don't have a <code>fetch</code> event handler. Let's fix
+                    We meet all the criteria above but one: we don't have a <code>fetch</code> event handler. Let's fix
                     that
                 </p>
 
