@@ -77,9 +77,15 @@ $ cd fe-guild-2019-pwa
 
                 <pre><code>$ git checkout pwa-service-workers-init</code></pre>
 
-                <p>To start the project type in the terminal and open Chrome at <code>localhost:8080</code></p>
+                <p>First install the dependencies</p>
+
+                <pre><code>$ npm install</code></pre>
+
+                <p>Then type in the terminal</p>
 
                 <pre><code>$ npm start</code></pre>
+
+                <p>and open Chrome at <code>localhost:8080</code></p>
             </google-codelab-step>
             <google-codelab-step label="The Service Worker Lifecycle" duration="10">
                 <h2>The service worker life cycle</h2>
@@ -397,6 +403,8 @@ self.addEventListener('activate', event => {
                     that
                 </p>
 
+                <p>In <code>sw.js</code></p>
+
                 <pre>
 <code>
 self.addEventListener('fetch', event => {
@@ -488,6 +496,8 @@ self.addEventListener('fetch', event => {
                     the user than helpful.
                 </p>
 
+                <p>In <code>src/js/app.js</code></p>
+
                 <pre>
 <code>
 window.addEventListener('beforeinstallprompt', event => {
@@ -515,6 +525,8 @@ window.addEventListener('beforeinstallprompt', event => {
                     user decided to add your web app to their home screen or if they dismissed it. The following
                     listing shows how.
                 </p>
+
+                <p>In <code>src/js/app.js</code></p>
 
                 <pre>
 <code>
