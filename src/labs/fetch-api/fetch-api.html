@@ -13,16 +13,16 @@
     &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
-</code></pre><h3>Optional</h3><p>To avoid manual refresh install <code>live-server</code></p><pre><code>
-$ npm install -g live-server
-</code></pre><p>To run it type <code>live-server</code> from the folder where you created the <code>index.html</code> file.</p></google-codelab-step><google-codelab-step label="fetch vs XMLHttpRequest" duration="7"><h2>XMLHttpRequest</h2><p>An <code>XMLHttpRequest</code> needs two listeners to be set to handle the success and error cases and a call to <code>open()</code> and <code>send()</code></p><pre><code>
+</code></pre><h3>Serving content</h3><p><code>http-server</code> is a simple, zero-configuration command-line http server. It is powerful enough for production usage, but it's simple and hackable enough to be used for testing, local development, and learning.</p><pre><code>
+$ npm install -g http-server
+</code></pre><p>To run it type <code>http-server</code> from the folder where you created the <code>index.html</code> file.</p></google-codelab-step><google-codelab-step label="fetch vs XMLHttpRequest" duration="7"><h2>XMLHttpRequest</h2><p>An <code>XMLHttpRequest</code> needs two listeners to be set to handle the success and error cases and a call to <code>open()</code> and <code>send()</code></p><pre><code>
 const xmlHttpRequest = new XMLHttpRequest();
 xmlHttpRequest.open('GET', 'https://httpbin.org/get');
 xmlHttpRequest.addEventListener('load', event =&gt; {
     const xhr = event.target;
 
     if (xhr.status === 200){
-        console.log(JSON.parse(event.target.responseText));
+        console.log(JSON.parse(xhr.responseText));
     } else {
         console.log(xhr.status);
     }
