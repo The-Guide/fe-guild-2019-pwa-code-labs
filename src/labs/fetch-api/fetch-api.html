@@ -85,16 +85,20 @@
 &lt;/html&gt;
 </code></pre>
 
-                <h3>Optional</h3>
+                <h3>Serving content</h3>
 
-                <p>To avoid manual refresh install <code>live-server</code></p>
+                <p>
+                    <code>http-server</code> is a simple, zero-configuration command-line http server. It is powerful
+                    enough for production usage, but it's simple and hackable enough to be used for testing, local
+                    development, and learning.
+                </p>
 
                 <pre>
 <code>
-$ npm install -g live-server
+$ npm install -g http-server
 </code></pre>
                 <p>
-                    To run it type <code>live-server</code> from the folder where you created the
+                    To run it type <code>http-server</code> from the folder where you created the
                     <code>index.html</code> file.
                 </p>
             </google-codelab-step>
@@ -114,7 +118,7 @@ xmlHttpRequest.addEventListener('load', event => {
     const xhr = event.target;
 
     if (xhr.status === 200){
-        console.log(JSON.parse(event.target.responseText));
+        console.log(JSON.parse(xhr.responseText));
     } else {
         console.log(xhr.status);
     }
